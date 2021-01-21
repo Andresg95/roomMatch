@@ -1,0 +1,18 @@
+{
+  "extends": "airbnb",
+  "plugins": ["react", "jsx-a11y", "import"],
+  "env": {
+    "browser": true
+  },
+  "rules": {
+    "import/no-named-as-default": 0,
+    "react/jsx-filename-extension": 0,
+    "linebreak-style": 0,
+    "react/prop-types": 0,
+    "camelcase": 0
+  },
+  "parserOptions": {
+    "sourceType": "module",
+    "allowImportExportEverywhere": true
+  }
+}

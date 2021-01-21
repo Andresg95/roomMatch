@@ -1,0 +1,415 @@
+{
+	"info": {
+		"_postman_id": "7b3aa947-89b0-4559-9b57-a69f8302fa84",
+		"name": "TFG",
+		"description": "Api test TFG:\r\n-Flask\r\n-React",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "createTodo",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwdWJsaWNfaWQiOiIwMWU4N2Y1ZS03M2FhLTRlY2EtYWE5MS1kMjIwN2RiYzViNDAiLCJleHAiOjE2MTAzMjAxMzd9.yujVj7L51Rg6BPSBYG9jqYGQJ_WkfK-sLje5x7gD8KQ",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"text\": \"hacer endpoint para ver todos los test\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/todo",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"todo"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "CreateUser",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"userName\": \"clara.romes\",\r\n    \"password\": \"clara123\"\r\n\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/user",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"user"
+					]
+				},
+				"description": "{\r\n    \"userName\": \"\",\r\n    \"password\": \"\"\r\n}"
+			},
+			"response": []
+		},
+		{
+			"name": "login",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "douglas123",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "douglas.rodriguez",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": []
+				},
+				"url": {
+					"raw": "http://localhost:5000/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "createTest",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwdWJsaWNfaWQiOiI0NTQwMTQxOC0zMjc3LTQ4ZTAtOTg5Ni02ZDAyMWZmNjE1YmMiLCJleHAiOjE2MTAzODA4OTV9.AXeokKDLjrpBEW_GLBuO344dEWDPv4AItzEJakRaOsI",
+						"type": "text"
+					},
+					{
+						"key": "",
+						"value": "",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"gender\":\"Hombre\",\r\n    \"age\" : 25,\r\n    \"musicGender\" : \"EDM\",\r\n    \"sport\" : \"Futbol\",\r\n    \"hobbie\" : \"Videojuegos\",\r\n    \"movieSeries\" : \"Ambas\",\r\n    \"filmGender\" : \" Accion\",\r\n    \"tabaco\": \"no\",\r\n    \"alcohol\": \"si\",\r\n    \"party\" : \"si\",\r\n    \"ordenConvivencia\" : 8 ,\r\n    \"ordenPersonal\" : 5,\r\n    \"personalidad\" : \"Extro\" \r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5000/test",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"test"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "createToDo",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwdWJsaWNfaWQiOiIwMWU4N2Y1ZS03M2FhLTRlY2EtYWE5MS1kMjIwN2RiYzViNDAiLCJleHAiOjE2MTAzMjAxMzd9.yujVj7L51Rg6BPSBYG9jqYGQJ_WkfK-sLje5x7gD8KQ",
+						"type": "text"
+					},
+					{
+						"key": "",
+						"value": "",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"text\": \"hacertfg\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5000/todo",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"todo"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "crear residente",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Clara.\",\r\n    \"lastName\" : \"Romes Alma\",\r\n    \"sharedRoom\" : 0\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/residente/6f5e581a-bb27-41bd-a13c-06d940241caa",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"residente",
+						"6f5e581a-bb27-41bd-a13c-06d940241caa"
+					]
+				},
+				"description": "crear usuario residente \r\n/residente/<public_id>"
+			},
+			"response": []
+		},
+		{
+			"name": "Verperfil",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwdWJsaWNfaWQiOiIwMWU4N2Y1ZS03M2FhLTRlY2EtYWE5MS1kMjIwN2RiYzViNDAiLCJleHAiOjE2MTAzODMyMjh9.q4sGfoL8aUSmxD6OfZMN1sArORgypcfs_3GTriODt_A",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:5000/perfil",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"perfil"
+					]
+				},
+				"description": "x-access-token header"
+			},
+			"response": []
+		},
+		{
+			"name": "Get all user ",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwdWJsaWNfaWQiOiIwMWU4N2Y1ZS03M2FhLTRlY2EtYWE5MS1kMjIwN2RiYzViNDAiLCJleHAiOjE2MTAzODMyMjh9.q4sGfoL8aUSmxD6OfZMN1sArORgypcfs_3GTriODt_A",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:5000/user",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"user"
+					]
+				},
+				"description": "Solo admin pueden"
+			},
+			"response": []
+		},
+		{
+			"name": "getSpecific test",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwdWJsaWNfaWQiOiIwMWU4N2Y1ZS03M2FhLTRlY2EtYWE5MS1kMjIwN2RiYzViNDAiLCJleHAiOjE2MTAzODQ3MzV9.qxhGaVB6by6WC6xM2g6Bwo9LScw1mjlYWlyXREsnBkU",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:5000/test/05b1923e-4193-49fe-8e43-0ae7f2df7717",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"test",
+						"05b1923e-4193-49fe-8e43-0ae7f2df7717"
+					]
+				},
+				"description": "http://localhost:5000/test/05b1923e-4193-49fe-8e43-0ae7f2df7717"
+			},
+			"response": []
+		},
+		{
+			"name": "GetAllTest",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwdWJsaWNfaWQiOiIwMWU4N2Y1ZS03M2FhLTRlY2EtYWE5MS1kMjIwN2RiYzViNDAiLCJleHAiOjE2MTAzODU4ODV9.wnHG1wFI9OosQWJ6vT_kLvcffs3qenPrR7WE-VB0-50",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:5000/test",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"test"
+					]
+				},
+				"description": "only admin puede hacerlo"
+			},
+			"response": []
+		},
+		{
+			"name": "CreateRoom",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwdWJsaWNfaWQiOiIwMWU4N2Y1ZS03M2FhLTRlY2EtYWE5MS1kMjIwN2RiYzViNDAiLCJleHAiOjE2MTAzODU4ODV9.wnHG1wFI9OosQWJ6vT_kLvcffs3qenPrR7WE-VB0-50",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"state\" : \"Libre\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/room",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"room"
+					]
+				},
+				"description": "{\r\n    \"state\" : \" \"\r\n}"
+			},
+			"response": []
+		},
+		{
+			"name": "Update Room",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwdWJsaWNfaWQiOiIwMWU4N2Y1ZS03M2FhLTRlY2EtYWE5MS1kMjIwN2RiYzViNDAiLCJleHAiOjE2MTAzODc1MTB9.cJRuC7iktK1mkR0JO9KSFqhfZ10EkWt8WN_x75xbKqQ",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"state\" : \"Llena\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/room/2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"room",
+						"2"
+					]
+				},
+				"description": "{ \r\n    \"state\" : \"new state\"\r\n}"
+			},
+			"response": []
+		}
+	]
+}
