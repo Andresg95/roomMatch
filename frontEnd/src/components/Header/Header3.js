@@ -41,7 +41,7 @@ const Header = () => (
         <Grid item md>
           <Grid container>
             {/* <Link to={`/Profile/${user.id}`} id="link"> <Link to="/Profile/1" id="link"> */}
-            <Link to={"/HomeUA"} id="link">
+            <Link to={"/Home"} id="link">
               <IconButton >
                 <HomeIcon />
               </IconButton>

@@ -8,76 +8,79 @@ import theme from "../theme/instapaper/theme";
 import withTheme from "./withTheme";
 import Box from "@material-ui/core/Box";
 import { Link } from "react-router-dom";
+import { Card, CardActions, Container } from "@material-ui/core";
 
 
 
 const { Typography } = atoms;
 
+const roommatesTest = [
+  {
+    name: "Douglas",
+    lastName: "rodriguez"
+  },
+  {
+    name: "Carlos",
+    lastName: "Garcia"
+  },
+  {
+    name: "Jose ",
+    lastName: "Aquino"
+  },
+  {
+    name: "Clara",
+    lastName: "Romes"
+  },
+];
+
 class Result extends Component {
-  
-  /*
-  constructor(props) {
-    super(props);
-    this.state = {
-      poster: "",
-      title: "",
-      year: "",
-      genre: "",
-      runtime: "",
-      director: "",
-      writer: "",
-      plot: "",
-      actors: "",
-      imdbid: "",
-      reviews: []
-    };
-
-
-  }
-*/
-
-/*
-  fetchData(id) {
-    Axios.get(`/movie/${id}`)
-      .then(response => {
-        return response.data;
-      })
-      .then(peliculaData => {
-        this.setState({
-          poster: peliculaData.poster,
-          title: peliculaData.title,
-          year: peliculaData.year,
-          genre: peliculaData.genre,
-          runtime: peliculaData.runtime,
-          director: peliculaData.director,
-          writer: peliculaData.writer,
-          plot: peliculaData.plot,
-          actors: peliculaData.actors,
-          imdbid: peliculaData.imdbid,
-          reviews: peliculaData.reviews || "No reviews yet"
-        });
-        console.log("this is imdbid", peliculaData.imdbid);
-        console.log("this in state", this.state.imdbid);
-      });
-  }
-*/
-
   render() {
     return (
       <React.Fragment>
         <CssBaseline />
         <Header />
-        <Grid>
-          <Box
-            component="main"
-            maxWidth={"auto"}
-            margin="auto"
-            padding="120px 30px 0"
-          >
-          </Box><Box>
+        <Box
+          component="main"
+          maxWidth={"auto"}
+          margin="auto"
+          padding="85px 364px 10px"
+        >
+          <Box width="900">
+            
+              <Grid container spacing={3} display="center">
+                <Grid item  ml={12}>
+                  <Typography component="h1" variant="h3">
+                    Resultados
+                  </Typography>
+                </Grid>
+                <Container>
+                {roommatesTest.map((option) => (
+                  <Card key={option.value} value={option.value} variant="outlined">
+                  <Typography variant="h5" component="h2">
+                  {option.name}
+               </Typography>
+               <Typography variant="h5" component="h2">
+                  {option.lastName}
+               </Typography>
+                      </Card>
+                    ))}
+                </Container>
+                {/* <Card variant="outlined">
+               
+                <Typography variant="h5" component="h2">
+                  Nombre de tu compañero de habitación 
+               </Typography>
+               <br>
+               </br>
+       <br></br>
+       <br></br>
+       <br></br>                </Card> */}
+       
 
+                </Grid>
+              
+                </Box>
           </Box>
-        </Grid>
       </React.Fragment>
     );
   }

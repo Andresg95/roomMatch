@@ -7,7 +7,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import atoms from "../components/atoms";
 import molecules from "../components/molecules";
-import Header from "../components/Header/Header1";
+import Header from "../components/Header/Header3";
 import theme from "../theme/instapaper/theme";
 import withTheme from "./withTheme";
 import Box from "@material-ui/core/Box";
@@ -136,6 +136,8 @@ class Profile extends Component {
   }
 
 */
+
+
 
   render() {
     return (
