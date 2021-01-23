@@ -239,7 +239,7 @@ def ver_perfil(current_user):
 
 #EndPoint test
 #Hacer test, crea el test en base al currente user osea que el usuario que llame al endpoint de test guardara eso
-@app.route('/test', methods=['POST'])
+@app.route('/api/test', methods=['POST'])
 @token_required
 def create_test(current_user):
    data = request.get_json()
