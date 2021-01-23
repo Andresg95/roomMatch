@@ -42,9 +42,9 @@ class Login extends React.Component {
           .then(response => {
             if (!response.err) {
               console.log("perro", {response});
-              sessionStorage.setItem("idUser", response.data.token);
+              sessionStorage.setItem("token", response.data.token);
               this.setState({ authenticated: true, id: response.data.id });
-              this.renderRedirect();
+              this.renderRedirect();  
             }
           })
           .catch(e => {

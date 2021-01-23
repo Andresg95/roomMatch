@@ -33,7 +33,6 @@ const Header = () => (
             
 
             <Divider vertical />
-cdscd
             <b>Match Roommates</b>
           </Grid>
         </Grid>
@@ -47,7 +46,7 @@ cdscd
               </IconButton>
             </Link>
             <Divider vertical />
-            <Link to={"/HomeUR"} id="link">
+            <Link to={"/Home"} id="link">
               <IconButton >
                 <HomeIcon />
               </IconButton>

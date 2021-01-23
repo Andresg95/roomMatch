@@ -8,7 +8,7 @@ import theme from "../theme/instapaper/theme";
 import withTheme from "./withTheme";
 import Box from "@material-ui/core/Box";
 import { Link } from "react-router-dom";
-import Axios from "../api/Axios";
+
 
 
 const { Typography } = atoms;
@@ -74,7 +74,9 @@ class Result extends Component {
             margin="auto"
             padding="120px 30px 0"
           >
-          </Box><Box></Box>
+          </Box><Box>
+
+          </Box>
         </Grid>
       </React.Fragment>
     );

@@ -14,7 +14,7 @@ import Box from "@material-ui/core/Box";
 import { Router, Route, hashHistory, BrowserRouter, Link } from "react-router";
 import EventSeat from "@material-ui/icons/EventSeat";
 import Avatar1 from "@material-ui/core/Avatar";
-import Axios from "../api/Axios";
+
 
 const { Avatar, Icon, Typography } = atoms;
 const { Tabs, Tab } = molecules;
