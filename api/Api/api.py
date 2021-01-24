@@ -222,7 +222,7 @@ def login():
     return make_response('Could not verify', 401, {'WWW-Authenticate' : 'Basic realm="Login required!"'})
 
 #ver perfil
-@app.route('/perfil', methods=['GET'])
+@app.route('/api/perfil', methods=['GET'])
 @token_required
 def ver_perfil(current_user):
 

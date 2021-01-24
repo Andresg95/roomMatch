@@ -57,7 +57,6 @@ class Login extends React.Component {
       renderRedirect() {
         console.log("redirect", this.state);
         if (this.state.authenticated) {
-
           this.props.history.push("/Home");
         }
       }
