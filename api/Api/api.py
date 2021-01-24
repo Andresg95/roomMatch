@@ -10,7 +10,7 @@ app = Flask(__name__)
  
 
 
-app.config['SECRET_KEY'] = 'Hellotest'
+app.config['SECRET_KEY'] = 'FuckTheRandomness'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://douglas:douglas98@localhost/tfgTest'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -95,7 +95,7 @@ def token_required(f):
      
 #EndPoints      
 #Get todos los usuarios
-@app.route('/user', methods=['GET'])
+@app.route('/api/user', methods=['GET'])
 @token_required
 def get_all_users(current_user):
 
@@ -117,7 +117,7 @@ def get_all_users(current_user):
    return jsonify({'users' : output})
 
 #get user/public_id usuario especifico
-@app.route('/user/<public_id>', methods=['GET'])
+@app.route('/api/user/<public_id>', methods=['GET'])
 @token_required
 def get_one_user(current_user,public_id):
 
@@ -135,7 +135,7 @@ def get_one_user(current_user,public_id):
 
 
 #Create new user
-@app.route('/user', methods=['POST'])
+@app.route('/api/user', methods=['POST'])
 #@token_required
 def create_user():
    data = request.get_json()
@@ -149,7 +149,7 @@ def create_user():
 
 #Create residente ( public_id = user.public_id, name, lastName, sharedRoom (True or false))
 # json { "name": "name", "lastName": "lastname", "sharedRoom": "1/0"}
-@app.route('/residente/<public_id>', methods=['POST'])
+@app.route('/api/residente/<public_id>', methods=['POST'])
 def create_resident(public_id):
     data = request.get_json()
     user = User.query.filter_by(public_id=public_id).first()
@@ -170,7 +170,7 @@ def create_resident(public_id):
 
   
 #Promover usuario a admin , solo un admin puede hacer eso
-@app.route('/user/<public_id>', methods=['PUT'])
+@app.route('/api/user/<public_id>', methods=['PUT'])
 @token_required
 def promote_user(current_user,public_id):
 
@@ -184,7 +184,7 @@ def promote_user(current_user,public_id):
    return jsonify({'message' : 'user has been promoted!'})
 
 #borrar un usuario, solo un admin podra
-@app.route('/user/<public_id>', methods=['DELETE'])
+@app.route('/api/user/<public_id>', methods=['DELETE'])
 @token_required
 def delete_user(current_user,public_id):
 
@@ -222,7 +222,7 @@ def login():
     return make_response('Could not verify', 401, {'WWW-Authenticate' : 'Basic realm="Login required!"'})
 
 #ver perfil
-@app.route('/perfil', methods=['GET'])
+@app.route('/api/perfil', methods=['GET'])
 @token_required
 def ver_perfil(current_user):
 
@@ -279,7 +279,7 @@ def create_test(current_user):
    return jsonify({'message' : "Test created!!!"})
 
 #obtener un test de usuario especifico
-@app.route('/test/<public_id>', methods=['GET'])
+@app.route('/api/test/<public_id>', methods=['GET'])
 @token_required
 def get_one_test(current_user,public_id):
     user = User.query.filter_by(public_id=public_id).first()
@@ -306,13 +306,12 @@ def get_one_test(current_user,public_id):
     test_data['ordenConvivencia'] = test.ordenConvivencia
     test_data['ordenPersonal'] = test.ordenPersonal
     test_data['personalidad'] = test.personalidad
-
     return jsonify({'test' : test_data})
 
 
 #get all test avaible
 
-@app.route('/test', methods=['GET'])
+@app.route('/api/allTest', methods=['GET'])
 @token_required
 def get_all_test(current_user):
 
@@ -345,7 +344,7 @@ def get_all_test(current_user):
 
 #get all test  hombre 
 
-@app.route('/test/Hombre', methods=['GET'])
+@app.route('/api/test/Hombre', methods=['GET'])
 @token_required
 def get_all_test_men(current_user):
 
@@ -377,7 +376,7 @@ def get_all_test_men(current_user):
     return jsonify({'tests' : output})
 
 #get all test  Mujer
-@app.route('/test/Mujer', methods=['GET'])
+@app.route('/api/test/Mujer', methods=['GET'])
 @token_required
 def get_all_test_female(current_user):
 
@@ -410,7 +409,7 @@ def get_all_test_female(current_user):
 
 
 #make a room
-@app.route('/room', methods=['POST'])
+@app.route('/api/room', methods=['POST'])
 @token_required
 def create_room(current_user):
     if not current_user.admin:
@@ -428,7 +427,7 @@ def create_room(current_user):
 
 #update state of room
 
-@app.route('/room/<room_id>', methods=['PUT'])
+@app.route('/api/room/<room_id>', methods=['PUT'])
 @token_required
 def update_state_room(current_user,room_id):
     if not current_user.admin:
@@ -446,6 +445,15 @@ def update_state_room(current_user,room_id):
 
     return jsonify({'message' : ' Rooms state update :D!'})
     
+#End point Get resultados de una habitación
+@app.route('api/room/<room_id>', methods=['GET'])
+@token_required
+def get_room_residents(current_user,room_id):
+
+    room = Rooms.query.filter_by(id = room_id).first()
+
+    if not room:
+        return jsonify({'message' : 'No room found!'})
 
 
 
