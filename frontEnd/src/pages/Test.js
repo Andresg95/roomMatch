@@ -239,6 +239,8 @@ class TestUR extends Component {
                   <TextField
                     id="gender"
                     select
+                    multiline
+                    required
                     label="¿Cual es tu sexo?"
                     value={this.state.Tsexo}
                     onChange={(event) => this.handleChange("gender", event.target.value)}
@@ -260,6 +262,7 @@ class TestUR extends Component {
                     fullWidth
                     margin="normal"
                     multiline
+                    required
                   />
                 </Grid>
                 <Grid item lg={12} width="auto">
@@ -267,6 +270,8 @@ class TestUR extends Component {
                     id="musicGender"
                     label="¿Cúal es tu género musical favorito?"
                     fullWidth
+                    multiline
+                    required
                     margin="normal"
                   />
                 </Grid>
@@ -275,6 +280,8 @@ class TestUR extends Component {
                     id="sport"
                     label="¿Qué deporte practicas?"
                     fullWidth
+                    multiline
+                    required
                     margin="normal"
                   />
                 </Grid>
@@ -283,6 +290,8 @@ class TestUR extends Component {
                     id="hobbie"
                     label="¿Tienes un Hobbie o pasatiempo?"
                     fullWidth
+                    multiline
+                    required
                     margin="normal"
                   />
                 </Grid>
@@ -290,6 +299,8 @@ class TestUR extends Component {
                   <TextField
                     id="movieSeries"
                     select
+                    multiline
+                    required
                     label="¿Qué prefieres?"
                     value={this.state.TseriesMovie}
                     onChange={(event) => this.handleChange("seriesMovies", event.target.value)}
@@ -309,18 +320,22 @@ class TestUR extends Component {
                     id="filmGender"
                     label="¿Género favorito de la pregunta anterior?"
                     fullWidth
+                    multiline
+                    required
                     margin="normal"
                   />
                 </Grid>
                 <Grid item lg={12} width="auto">
                   <TextField
                     id="tabaco"
-                    select
+                    select required
                     label="¿Fumas Tabaco?"
                     value={this.state.Ttabaco}
                     onChange={(event) => this.handleChange("tabaco", event.target.value)}
                     helperText="Elige una  respuesta"
                     fullWidth
+                    multiline
+                    required
                     margin="normal"
                   >
                     {Ttabaco.map((option) => (
@@ -333,7 +348,7 @@ class TestUR extends Component {
                 <Grid item lg={12} width="auto">
                   <TextField
                     id="alcohol"
-                    select
+                    select required
                     label="¿Consumes Alcohol?"
                     value={this.state.Talcohol}
                     onChange={(event) => this.handleChange("alcohol",event.target.value)}
@@ -351,7 +366,7 @@ class TestUR extends Component {
                 <Grid item lg={12} width="auto">
                   <TextField
                     id="party"
-                    select
+                    select required
                     label="¿Te gustan las fiestas?"
                     value={this.state.Tparty}
                     onChange={(event) => this.handleChange("party",event.target.value)}
@@ -369,7 +384,7 @@ class TestUR extends Component {
                 <Grid item lg={12} width="auto">
                   <TextField
                     id="personalidad"
-                    select
+                    select required
                     label="¿Te consideras más introvertid@ o extrovertid@?"
                     value={this.state.Tperso}
                     onChange={(event) => this.handleChange("personality",event.target.value)}
@@ -387,7 +402,7 @@ class TestUR extends Component {
                 <Grid item lg={12} width="auto">
                   <TextField
                     id="ordenConvivencia"
-                    select
+                    select required
                     label="En la escala de 1 a 10, 1 siendo poco y 10 mucho, ¿Qué tan importante consideras el orden y la limpieza para la convivencia?"
                     value={this.state.TordenC}
                     onChange={(event) => this.handleChange("orderC",event.target.value)}
@@ -406,7 +421,7 @@ class TestUR extends Component {
                 <Grid item lg={12} width="auto">
                   <TextField
                     id="ordenPersonal"
-                    select
+                    select required
                     label="En la escala de 1 a 10, 1 siendo poco y 10 mucho,
                     ¿Cómo te consideras respecto al orden y limpieza?"
                     value={this.state.TordenP}

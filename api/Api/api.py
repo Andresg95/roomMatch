@@ -28,7 +28,7 @@ class User(db.Model):
 #Table testResidents
 class TestR(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer)
+    public_id = db.Column(db.String(50), unique=True)
     gender = db.Column(db.String(10))
     age = db.Column(db.Integer)
     musicGender = db.Column(db.String(25))
@@ -116,6 +116,7 @@ def get_all_users(current_user):
 
    return jsonify({'users' : output})
 
+
 #get user/public_id usuario especifico
 @app.route('/api/user/<public_id>', methods=['GET'])
 @token_required
@@ -168,7 +169,6 @@ def create_resident(public_id):
     return jsonify({'message' : 'New resident created!'})
 
 
-  
 #Promover usuario a admin , solo un admin puede hacer eso
 @app.route('/api/user/<public_id>', methods=['PUT'])
 @token_required
@@ -182,6 +182,7 @@ def promote_user(current_user,public_id):
    user.admin = True
    db.session.commit()
    return jsonify({'message' : 'user has been promoted!'})
+
 
 #borrar un usuario, solo un admin podra
 @app.route('/api/user/<public_id>', methods=['DELETE'])
@@ -201,25 +202,27 @@ def delete_user(current_user,public_id):
 
    return jsonify({'message' : 'The user has been deleted!'})
 
+
 #Login , comprueba credenciales, genera token el cual se necesita para acceder a los endpoints
 @app.route('/api/login')
 def login():
     auth = request.authorization
 
     if not auth or not auth.username or not auth.password:
-        return make_response('Falta Data', 401, {'WWW-Authenticate' : 'Basic realm="Login required!"'})
+        return make_response('Falta Data', 401)
 
     user = User.query.filter_by(userName=auth.username).first()
 
     if not user:
-        return make_response('Could not verify', 401, {'WWW-Authenticate' : 'Basic realm="Login required!"'})
+        return make_response('Could not verify', 401)
 
     if check_password_hash(user.password, auth.password):
         token = jwt.encode({'public_id' : user.public_id, 'exp' : datetime.datetime.utcnow() + datetime.timedelta(minutes=45)}, app.config['SECRET_KEY'])
 
         return jsonify({'token' : token.decode('UTF-8')})
 
-    return make_response('Could not verify', 401, {'WWW-Authenticate' : 'Basic realm="Login required!"'})
+    return make_response('Could not verify', 401)
+
 
 #ver perfil
 @app.route('/api/perfil', methods=['GET'])
@@ -242,6 +245,7 @@ def ver_perfil(current_user):
 @app.route('/api/test', methods=['POST'])
 @token_required
 def create_test(current_user):
+   
    data = request.get_json()
 
 #    {
@@ -258,8 +262,9 @@ def create_test(current_user):
 #     "ordenConvivencia" : 7 , int
 #     "ordenPersonal" : 5, int
 #     "personalidad" : "intro" , intro o extro  
-# } 
-   new_test = TestR(user_id=current_user.id,
+# }
+ 
+   new_test = TestR(public_id=current_user.public_id,
                      gender=data['gender'],
                      age=data['age'],
                      musicGender=data['musicGender'],
@@ -286,7 +291,7 @@ def get_one_test(current_user,public_id):
     if not user :
       return jsonify({'message': 'Dude, no user found ! :('})
 
-    test = TestR.query.filter_by(user_id=user.id).first()
+    test = TestR.query.filter_by(user_id=user.public_id).first()
 
     if not test :
       return jsonify({'message': 'Dude, no test available ! :('})
@@ -446,7 +451,7 @@ def update_state_room(current_user,room_id):
     return jsonify({'message' : ' Rooms state update :D!'})
     
 #End point Get resultados de una habitación
-@app.route('api/room/<room_id>', methods=['GET'])
+@app.route('/api/room/<room_id>', methods=['GET'])
 @token_required
 def get_room_residents(current_user,room_id):
 

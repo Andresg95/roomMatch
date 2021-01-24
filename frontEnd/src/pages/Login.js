@@ -18,7 +18,6 @@ class Login extends React.Component {
     this.state = {
       authenticated: false,
       defaultErrorMessage: "",
-      id: "",
     };
     this.authenticate = this.authenticate.bind(this);
     this.renderRedirect = this.renderRedirect.bind(this);
@@ -48,9 +47,22 @@ class Login extends React.Component {
             }
           })
           .catch(e => {
-            console.log(e.response.data.err);
-
-            this.setState({ defaultErrorMessage: e.response.data.err });
+            if (e.response) {
+              // Request made and server responded
+              console.log(e.response.data);
+              this.setState({ defaultErrorMessage: e.response.data});
+            } else if (e.request) {
+              // The request was made but no response was received
+              console.log(e.request);
+              this.setState({ defaultErrorMessage: e.response.data});
+            } else {
+              // Something happened in setting up the request that triggered an Error
+              console.log('Error', e.message);
+              this.setState({ defaultErrorMessage: e.response.data});
+            }
+            //console.log(e.response.data.err);
+            // alert(e.request.data)
+            // this.setState({ defaultErrorMessage: e.err });
           });
       }
   
@@ -106,10 +118,9 @@ class Login extends React.Component {
                 autoComplete="current-password"
               />
               <div>
-                
-                <Typography component="h2" variant="h5" color="error">
-                  
-                  {/* {this.state.defaultErrorMessage} */}
+                <Typography component="h2" variant="h5" color="error" >
+                  {
+                  console.log(this.state.defaultErrorMessag)} 
                 </Typography>
               </div>
              
