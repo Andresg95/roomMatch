@@ -606,7 +606,7 @@ def get_matchs_room(current_user,room_id):
 #get your personal result with your token xd
 @app.route('/api/result', methods=['GET'])
 @token_required
-def get_result(current_user,room_id):
+def get_result(current_user):
     
 
     resident = Residents.query.filter_by(public_id = current_user.public_id).first()
