@@ -14,9 +14,15 @@ import Box from "@material-ui/core/Box";
 import { Router, Route, hashHistory, BrowserRouter, Link } from "react-router";
 import EventSeat from "@material-ui/icons/EventSeat";
 import Avatar1 from "@material-ui/core/Avatar";
+import axios from "axios";
 
+import Card from '@material-ui/core/Card';
+import CardActions from '@material-ui/core/CardActions';
+import CardContent from '@material-ui/core/CardContent';
+import Typography from '@material-ui/core/Typography';
+import token from "basic-auth-token";
 
-const { Avatar, Icon, Typography } = atoms;
+const { Avatar, Icon  } = atoms;
 const { Tabs, Tab } = molecules;
 const useStyles = makeStyles({
   editButton: {
@@ -31,10 +37,52 @@ const useStyles = makeStyles({
     [theme.breakpoints.up("sm")]: {
       marginLeft: 5
     }
-  }
+  },
+  root: {
+    minWidth: 275,
+  },
+  bullet: {
+    display: 'inline-block',
+    margin: '0 2px',
+    transform: 'scale(0.8)',
+  },
+  title: {
+    fontSize: 14,
+  },
+  pos: {
+    marginBottom: 12,
+  },
 });
 
 class Profile extends Component {
+
+
+  constructor(props){
+    super(props);
+    this.state={
+      name: "",
+      lastname: "",
+      sharedRoom: "- -"
+    }
+  }
+
+  componentWillMount(){
+
+    let token = sessionStorage.getItem("token");
+
+    axios.get("/api/perfil", { headers : {
+      "x-access-token" : token
+    }})
+    .then(response=>{
+      if (!response.err) {
+        let {resident} = response.data;
+        this.setState({name : resident.name, lastname: resident.lastName, sharedRoom: resident.sharedRoom})
+         
+      }
+    })
+
+
+  }
   /*
   constructor(props) {
     super(props);
@@ -57,7 +105,6 @@ class Profile extends Component {
     this.handleOnClick = this.handleOnClick.bind(this);
 
   }
-
  
   componentDidUpdate(prevProps) {
     const {
@@ -140,6 +187,12 @@ class Profile extends Component {
 
 
   render() {
+
+    
+    const bull = <span className={"bullet"}>•</span>;
+    const { name, lastname, sharedRoom } = this.state;
+    const roomtext = (sharedRoom==0) ? "null" : sharedRoom;
+    
     return (
       <React.Fragment>
         <CssBaseline />
@@ -151,6 +204,32 @@ class Profile extends Component {
             margin="auto"
             padding="120px 30px 0"
           >
+            <Box>
+            <Card className={"root"} variant="outlined">
+              <CardContent>
+                <Typography
+                  className={"title"}
+                  color="textSecondary"
+                  gutterBottom
+                >
+                  Datos personales
+                </Typography>
+                <Typography variant="h5" component="h2">
+                  {bull} Nombre: {name}
+                </Typography>
+                <Typography  variant="h5" component="h2">
+                {bull} Apellidos: {lastname}
+                </Typography>
+                <Typography className={"pos"} color="textSecondary">
+                Cuarto Compartido: {roomtext}
+            </Typography>
+              </CardContent>
+              <CardActions>
+                <Button size="small">Learn More</Button>
+              </CardActions>
+            </Card>
+            </Box>
+            
           </Box>
         </Grid>
       </React.Fragment>
