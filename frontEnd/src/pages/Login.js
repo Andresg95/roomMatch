@@ -31,8 +31,6 @@ class Login extends React.Component {
         const password = event.target.password.value;
         let token = basic(userName, password)
 
-        console.log({token})
-
         axios.get("/api/login", {
           headers: {
             Authorization: `Basic ${token}`
@@ -50,11 +48,13 @@ class Login extends React.Component {
             if (e.response) {
               // Request made and server responded
               console.log(e.response.data);
+              alert(e.response.data);
               this.setState({ defaultErrorMessage: e.response.data});
             } else if (e.request) {
               // The request was made but no response was received
               console.log(e.request);
-              this.setState({ defaultErrorMessage: e.response.data});
+              alert(e.request);
+              this.setState({ defaultErrorMessage: e.request.data});
             } else {
               // Something happened in setting up the request that triggered an Error
               console.log('Error', e.message);

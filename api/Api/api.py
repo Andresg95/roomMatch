@@ -108,6 +108,7 @@ def get_all_users(current_user):
 
    for user in users:
       user_data = {}
+      user_data['user_id'] = user.id
       user_data['public_id'] = user.public_id
       user_data['userName'] = user.userName
       user_data['password '] = user.password
@@ -115,6 +116,48 @@ def get_all_users(current_user):
       output.append(user_data)
 
    return jsonify({'users' : output})
+
+#Get all residentes
+@app.route('/api/residents', methods=['GET'])
+@token_required
+def get_all_residents(current_user):
+
+    if not current_user.admin:
+        return jsonify({'message' : 'Cannot performs that funtion!'})
+    
+    residents = Residents.query.all()
+
+    output = []
+
+    for resident in residents:
+
+        resident_data = {}
+        resident_data['resident_Id'] = resident.id
+        resident_data['public_Id'] = resident.public_id
+        resident_data['name'] = resident.name
+        resident_data['lastName'] = resident.lastName
+        resident_data['sharedRoom'] = resident.sharedRoom
+        output.append(resident_data)
+    
+    return jsonify({'residents' : output})
+
+#Get one resident info from resident by public id
+@app.route('/api/resident/<public_id>', methods=['GET'])
+@token_required
+def get_resident(current_user,public_id):
+
+    if not current_user.admin:
+        return jsonify({'message' : 'Cannot performs that funtion!'})
+    
+    resident = Residents.query.filter_by(public_id=public_id).first()
+    if not resident:
+        return jsonify({'message' : 'Dude, no resident found ! :('}),404
+
+    resident_data = {}
+    resident_data['name'] = resident.name
+    resident_data['lastName'] = resident.lastName
+    resident_data['sharedRoom'] = resident.sharedRoom
+    return jsonify({'resident' : resident_data})
 
 
 #get user/public_id usuario especifico
@@ -135,6 +178,8 @@ def get_one_user(current_user,public_id):
    return jsonify({'user' : user_data})
 
 
+
+
 #Create new user
 @app.route('/api/user', methods=['POST'])
 #@token_required
@@ -151,12 +196,17 @@ def create_user():
 #Create residente ( public_id = user.public_id, name, lastName, sharedRoom (True or false))
 # json { "name": "name", "lastName": "lastname", "sharedRoom": "1/0"}
 @app.route('/api/residente/<public_id>', methods=['POST'])
-def create_resident(public_id):
+@token_required
+def create_resident(current_user,public_id):
+
+    if not current_user.admin:
+        return jsonify({'message' : 'Cannot perform that function!'})
+
     data = request.get_json()
     user = User.query.filter_by(public_id=public_id).first()
 
     if not user :
-      return jsonify({'message': 'Dude, no user found ! :('})
+      return jsonify({'message': 'Dude, no user found ! :('}),404
 
     new_resident = Residents(   public_id=public_id, 
                                 name =data['name'],
@@ -166,7 +216,7 @@ def create_resident(public_id):
     db.session.add(new_resident)
     db.session.commit()
 
-    return jsonify({'message' : 'New resident created!'})
+    return jsonify({'message' : 'New resident created!'}),200
 
 
 #Promover usuario a admin , solo un admin puede hacer eso
@@ -329,7 +379,7 @@ def get_all_test(current_user):
 
     for test in tests:
         test_data = {}
-        test_data['user_id'] = test.user_id
+        test_data['user_id'] = test.public_id
         test_data['gender'] = test.gender
         test_data['age'] = test.age
         test_data['musicGender'] = test.musicGender
@@ -356,13 +406,13 @@ def get_all_test_men(current_user):
     if not current_user.admin:
         return jsonify({'message' : 'Cannot perform that function!'})
 
-    tests = TestR.query.filter_by(gender = "Hombre").all()
+    tests = TestR.query.filter_by(gender = "masculino").all()
 
     output = []
 
     for test in tests:
         test_data = {}
-        test_data['user_id'] = test.user_id
+        test_data['user_id'] = test.public_id
         test_data['gender'] = test.gender
         test_data['age'] = test.age
         test_data['musicGender'] = test.musicGender
@@ -388,13 +438,13 @@ def get_all_test_female(current_user):
     if not current_user.admin:
         return jsonify({'message' : 'Cannot perform that function!'})
 
-    tests = TestR.query.filter_by(gender = "Mujer").all()
+    tests = TestR.query.filter_by(gender = "femenino").all()
 
     output = []
 
     for test in tests:
         test_data = {}
-        test_data['user_id'] = test.user_id
+        test_data['user_id'] = test.public_id
         test_data['gender'] = test.gender
         test_data['age'] = test.age
         test_data['musicGender'] = test.musicGender
@@ -417,6 +467,7 @@ def get_all_test_female(current_user):
 @app.route('/api/room', methods=['POST'])
 @token_required
 def create_room(current_user):
+
     if not current_user.admin:
         return jsonify({'message' : 'Cannot perform that function!'})
     
@@ -435,6 +486,7 @@ def create_room(current_user):
 @app.route('/api/room/<room_id>', methods=['PUT'])
 @token_required
 def update_state_room(current_user,room_id):
+
     if not current_user.admin:
         return jsonify({'message' : 'Cannot perform that function!'}),401
     
@@ -450,15 +502,144 @@ def update_state_room(current_user,room_id):
 
     return jsonify({'message' : ' Rooms state update :D!'})
     
-#End point Get resultados de una habitación
+#End point Get resultados de una habitación table rooms
 @app.route('/api/room/<room_id>', methods=['GET'])
 @token_required
 def get_room_residents(current_user,room_id):
+
+    if not current_user.admin:
+        return jsonify({'message' : 'Cannot perform that function!'}),401
 
     room = Rooms.query.filter_by(id = room_id).first()
 
     if not room:
         return jsonify({'message' : 'No room found!'})
+    
+    room_data = {}
+    room_data['roomID'] = room.id
+    room_data['State'] = room.state
+
+    return jsonify({'Room': room_data})
+
+#End point get all rooms from rooms table
+@app.route('/api/room', methods=['GET'])
+@token_required
+def get_all_rooms(current_user):
+    if not current_user.admin:
+        return jsonify({'message' : 'Cannot perform that function!'}),401
+
+    rooms = Rooms.query.all()
+
+    output = []
+
+    for room in rooms:
+        room_data = {}
+        room_data['roomID'] = room.id
+        room_data['State'] = room.state
+        output.append(room_data)
+    
+    return jsonify({ 'rooms': output})
+
+
+#agregar resident a una habitación o asociar una habitación a un resident
+#post
+# class Matches(db.Model):
+#     id = db.Column(db.Integer, primary_key=True)
+#     user_id = db.Column(db.Integer) 
+#     room_id = db.Column(db.Integer)
+
+@app.route('/api/match/<room_id>/<public_id>', methods=['POST'])
+@token_required
+def add_room_to_resident(current_user,room_id,public_id):
+
+    if not current_user.admin:
+        return jsonify({'message' : 'Cannot perform that function!'})
+    
+    room = Rooms.query.filter_by(id = room_id).first()
+    
+    
+    if not room:
+        return jsonify({'message' : 'No room found!'}), 404
+    
+    resident = Residents.query.filter_by(public_id=public_id).first()
+    if not resident:
+        return jsonify({'message' : 'Dude, no resident found ! :('}),404
+
+    new_match = Matches( user_id=resident.public_id, room_id= room.id)
+    db.session.add(new_match)
+    db.session.commit()
+
+    return jsonify({'message' : 'New match add!'})
+
+
+
+#End point dar los resultados en tabla matchets con id room
+@app.route('/api/match/<room_id>', methods=['GET'])
+@token_required
+def get_matchs_room(current_user,room_id):
+    if not current_user.admin:
+        return jsonify({'message' : 'Cannot perform that function!'}),401
+
+    room = Rooms.query.filter_by(id = room_id).first()
+    
+    if not room:
+        return jsonify({'message' : 'Dude, no room found'}), 404
+
+    matchR = Matches.query.filter_by(room_id= room.id).first()
+    if not matchR:
+        return jsonify({'message' : 'Dude, no room in matchs table'}), 404
+    
+    
+    matchAll = Matches.query.filter_by(room_id = room.id).all()
+    
+    output = []
+
+    for match in matchAll:
+        match_data = {}
+        resident = Residents.query.filter_by(public_id=match.user_id).first()
+        match_data['room_id'] = match.room_id
+        match_data['Resident Name'] = resident.name
+        output.append(match_data)
+    
+    return jsonify({'matches' : output})
+
+#get your personal result with your token xd
+@app.route('/api/result', methods=['GET'])
+@token_required
+def get_result(current_user,room_id):
+    
+
+    resident = Residents.query.filter_by(public_id = current_user.public_id).first()
+    
+    if not resident:
+        return jsonify({'message' : 'Dude, no resident found'}), 404
+
+    matchR = Matches.query.filter_by(user_id= resident.public_id).first()
+    if not matchR:
+        return jsonify({'message' : ' Not result in match :('}), 404
+    
+    
+    matchAll = Matches.query.filter_by(room_id = matchR.room_id).all()
+    
+    output = []
+
+    for match in matchAll:
+        match_data = {}
+        resident = Residents.query.filter_by(public_id=match.user_id).first()
+        match_data['room_id'] = match.room_id
+        match_data['user_id'] = match.user_id
+        match_data['Resident Name'] = resident.name
+        output.append(match_data)
+    
+    return jsonify({'matches' : output})
+
+
+
+
+
+
+
+
 
 
 
