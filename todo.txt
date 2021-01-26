@@ -1,0 +1,7 @@
+Se agrego la IA en el enpoint /api/ia  
+Fallata : 
+-que el endpoint consuma datos de la db y se los devuelva, ala db	 
+-Vista resultados 
+-Vista realizar matchs 
+-Vista ver matches
+-Termina endpoints
