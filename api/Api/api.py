@@ -5,6 +5,18 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import jwt
 import datetime
 from functools import wraps
+#IA imports
+import pickle
+import nltk as distance
+import Pycluster as PC
+import numpy 
+import pandas as pd
+import csv
+import time
+import matplotlib.pyplot as plt
+
+import json
+from json import JSONEncoder
 
 app = Flask(__name__)
  
@@ -297,22 +309,6 @@ def ver_perfil(current_user):
 def create_test(current_user):
    
    data = request.get_json()
-
-#    {
-#     "gender":"Hombre", string
-#     "age" : 22,  int
-#     "musicGender" : "EDM", string
-#     "sport" : "Volleyball", string
-#     "hobbie" : "Videojuegos", string
-#     "movieSeries" : "Peliculas", string
-#     "filmGender" : " Thriller", string
-#     "tabaco": "no",  si/no
-#     "alcohol": "si", si/no
-#     "party" : "si", si/no
-#     "ordenConvivencia" : 7 , int
-#     "ordenPersonal" : 5, int
-#     "personalidad" : "intro" , intro o extro  
-# }
  
    new_test = TestR(public_id=current_user.public_id,
                      gender=data['gender'],
@@ -633,6 +629,150 @@ def get_result(current_user):
     
     return jsonify({'matches' : output})
 
+
+
+
+@app.route('/api/ia',methods=['GET'])
+#@token_required
+def test_ia():
+    DataSetTFG = ['21HombreElectronicaVolleyballVideojuegosPeliculasThrillerIntrovertid@',
+    '25HombreElectronicaFutbolVideojuegosAmbasAccionExtrovertid@',
+    '20MujerTodoSurfGuitarraSeriesThrillerExtrovertid@',
+    '23HombreHip hopNingunoFiestaSeriesComediaExtrovertid@',
+    '21MujerTrapNingunoPasar tiempo en la naturaleza AmbasRomanticas Extrovertid@',
+    '20MujerRockTennisTocar guitarraPeliculasComediaIntrovertid@',
+    '19MujerTechnoGimnasiaFotografiaSeriesTerrorExtrovertid@',
+    '23HombreMetalCalisteniaBateria SeriesComedia Introvertid@',
+    '21HombrePopCriketEstudiarPeliculasDramaIntrovertid@',
+    '22MujerRockBaloncestoCervezaAmbasThrillerExtrovertid@',
+    '25HombreReggeaton Surf Videojuegos SeriesAccion Extrovertid@',
+    '22MujerChillVolleyball LeerAmbasAccion Extrovertid@',
+    '21MujerReggaetonVolleyballTocar el saxofon AmbasComedia Extrovertid@',
+    '19MujerReggaeton VolleyballPasar con amigos AmbasRom-comsExtrovertid@',
+    '23MujerPopGimnasioLas peliculasAmbasSuspenseExtrovertid@',
+    '21MujerReggaetonNatacionNetflix SeriesThrillerIntrovertid@',
+    '21MujerPopEjercicio en casaEscribirSeriesAccionExtrovertid@',
+    '22MujerPopSenderismoSalir a tomar algoSeriesSitcomsExtrovertid@',
+    '21MujerHeavy metalNatacionScrapbookingAmbasSitcomsIntrovertid@',
+    '21MujerRapGimnasioMuchos AmbasThrillerExtrovertid@',
+    '22MujerHardcoreYogaFotografia PeliculasThrillerIntrovertid@',
+    '22HombrePopDeportes de montanaLa montanaAmbasComedia Extrovertid@',
+    '22MujerIndieNingunoCineAmbasDramaExtrovertid@',
+    '20MujerPopGimnasioHobbieSeriesComediaExtrovertid@',
+    '20MujertechnoNingunoReposteriaAmbasAmorIntrovertid@',
+    '20MujerPopCorrer Tejer SeriesComedias Extrovertid@'
+    '21MujerNo tengoGimansioLeerAmbasTerrorIntrovertid@',
+    '22MujerPopRugbyCineAmbasThriller Extrovertid@',
+    '21MujerPopNatacion BaileAmbasRomanticas Introvertid@',
+    '21MujerPopNinguno LeerAmbasRomanticas Extrovertid@',
+    '22MujerReggaeton Ninguno Ver series SeriesDrama Introvertid@',
+    '22MujerNo tengo Ninguno BailarAmbasCiencia ficcion Extrovertid@',
+    '22MujerNo tengo Ninguno BailarAmbasCiencia ficcion Extrovertid@',
+    '20MujerPopGimnasioCocinarAmbasDrama Extrovertid@',
+    '25HombreIndieVolleyballGamingSeriesDibujos animadosIntrovertid@',
+    '17MujerIndieVolleyballVideojuegos AmbasHistoria Introvertid@',
+    '23MujerPopPole danceBailarAmbasComediaExtrovertid@',
+    '19MujerRockBaileLeer AmbasDramaIntrovertid@',
+    '20MujerIndieNingunoCantarAmbasTerrorIntrovertid@',
+    '21MujerPopNingunoCantarAmbasRomanceIntrovertid@',
+    '21MujerPopDanzaLeerAmbasPoliciacasExtrovertid@',
+    '23MujerRockNingunoIdiomas AmbasSuspensoExtrovertid@',
+    '23HombrePunkAtletismo Dibujo SeriesDramaIntrovertid@',
+    '20MujerRockTennisTocar guitarraPeliculasComediaIntrovertid@',
+    '21MujerPopPilatesLeerAmbasMisterioExtrovertid@',
+    '25MujerPopNingunoTeatroAmbasThrillerExtrovertid@',
+    '19MujerElectronica Tocho bandera Tocho Bandera AmbasAccion Introvertid@',
+    '18MujerPopSenderismoEstar con mi familia SeriesDrama Extrovertid@',
+    '23Hombreindie NingunoFotografiaAmbasAccion Introvertid@',
+    '21MujerIndieVolleyballLeerAmbasRom-comsIntrovertid@',
+    '21MujerIndieNatacionEstar al aire libreSeriesRomanticasIntrovertid@',
+    '20MujerR&BCrossFitHacer ejercicioPeliculasSuspensoIntrovertid@',
+    '19MujerPopNingunoLa musicaPeliculasRomanticasExtrovertid@',
+    '19MujerIndieTenniscocinar AmbasSuspensoExtrovertid@',
+    '19HombreSkaFutbolPcAmbasAccionIntrovertid@',
+    '18HombreRapNingunoLeerAmbasMisterioIntrovertid@',
+    '22MujerIndieNingunoDibujarAmbasSuspensoIntrovertid@',
+    '20HombreTodoVolleyball EscribirAmbasDramaExtrovertid@',
+    '20HombreTodoFutbolLeerAmbasAccion Extrovertid@',
+    '22MujerPop NingunoPasar con mi familiaAmbasRom-comsExtrovertid@',
+    '20HombreTechnoCrossfitVer seriesAmbasAccion Introvertid@',
+    '22HombreRapFutbol Fotografia PeliculasThrillerIntrovertid@',
+    '21MujerRockVolleyball La musica PeliculasComediaExtrovertid@',
+    '19MujerElectronica Tocho bandera Tocho Bandera AmbasAccion Introvertid@',
+    '25HombreRockFutbol Fotografia AmbasComedia Extrovertid@',
+    '20MujerRockTennisTocar guitarraPeliculasComediaIntrovertid@',
+    '21MujerReggaetonVolleyballTocar el saxofon AmbasSuspenso Extrovertid@',
+    '21MujerElectronica Futbol EscribirAmbasAnimeExtrovertid@',
+    '21MujerReggaetonVolleyballEscuchar musica AmbasAccion Extrovertid@',
+    '21MujerIndieBaseballTocar el saxofon AmbasSuspensoExtrovertid@',
+    '21HombreCorridosFutbolVideojuegosPeliculasTerrorIntrovertid@',
+    '22HombreHouseGolfVideojuegosSeriesSuspensoExtrovertid@',
+    '21MujerPopNinguno Dibujar AmbasAnimeIntrovertid@',
+    '24HombreReggaeton Futbol Jugar a la consolaAmbasAccion Extrovertid@',
+    '20MujerReggaeton NingunoEscuchar musica PeliculasComediaExtrovertid@',
+    '25HombreTech HouseNingunoe-sportsAmbasTerror PsicologicoIntrovertid@',
+    '24HombreRockFutbolHacer deporte AmbasSuspenso Introvertid@',
+    '21HombreReaggeton BaseballVer peliculas AmbasComediaExtrovertid@',
+    '25HombreMetalFutbol GymAmbasThrillerIntrovertid@',
+    '25HombrePunkFutbolEl GimnasioSeriessuspensoExtrovertid@',
+    '22HombreRapFutbolHacer ejercicio AmbasAccionExtrovertid@',
+    '21MujerPopHitDibujarAmbasRomanceExtrovertid@'
+    ]
+
+
+#Procesado de texto / Levistanche distance
+
+    dist2 = [distance.edit_distance(DataSetTFG[i], DataSetTFG[j]) 
+            for i in range(1, len(DataSetTFG))
+            for j in range(0, i)]
+
+    # labels1, error1, nfound1 = PC.kmedoids(dist2, nclusters=10,npass=10)
+    # cluster1 = dict()
+    
+
+    # for roommate, label in zip(DataSetTFG, labels1):
+    #     cluster1.setdefault(label,[]).append(roommate)
+    #     cluster_data = {}
+    #     cluster_data['Key'] = label
+    #     cluster_data['roommate'] = cluster1.items()
+    #     output.append(cluster_data)
+    # for label, grp in cluster1.items():
+    #     print(grp)
+    output = []
+    labels5, error5, nfound5 = PC.kmedoids(dist2, nclusters=3,npass=10)
+    cluster5 = dict()
+    
+    w1 = csv.writer(open("ClusterTest.csv", "w"))
+    for roommate, label in zip(DataSetTFG, labels5):
+        cluster5.setdefault(label, []).append(roommate)
+        w1.writerow([roommate, label])
+    for label, grp in cluster5.items():
+        cluster_data = {}
+        cluster_data['Roommate'] = grp
+        
+        output.append(cluster_data)
+        print(grp)
+    
+    # csvFilePath = 'ClusterTest.csv'
+    # jsonFilePath = 'Test.json'
+    # with open(csvFilePath) as csvFile:
+    #     csvReader = csv.DictReader(csvFile)
+    #     for rows in csvReader:
+    #         id = rows['id']
+    #         data[id] = rows
+    # with open(jsonFilePath, 'w') as jsonFile:
+    #     jsonFile.write(json.dumps(cluster_data, indent=4))
+    # numpyData = {"array": output}
+    # encodedNumpyData = json.dumps(numpyData, cls=NumpyArrayEncoder)
+
+    return jsonify({'message' : output})
+
+
+# for roommate, label in zip(DataSetTFG, labels5):
+#     cluster5.setdefault(label, []).append(roommate)
+#     w1.writerow([roommate, label])
+# for label, grp in cluster5.items():
+#     print(grp)
 
 
 

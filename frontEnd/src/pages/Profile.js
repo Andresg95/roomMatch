@@ -69,7 +69,7 @@ class Profile extends Component {
   componentWillMount(){
 
     let token = sessionStorage.getItem("token");
-
+    console.log("token",token);
     axios.get("/api/perfil", { headers : {
       "x-access-token" : token
     }})
