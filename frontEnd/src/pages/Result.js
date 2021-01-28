@@ -54,7 +54,7 @@ class Result extends Component {
           let roommatesD = response.data;
           let rommate2 = [];
           roommatesD.matches.map((x) => {
-            rommate2.push(x);
+            rommate2.push({"roommate":x});
           });
 
           this.setState({ roommates: rommate2 });
@@ -67,9 +67,8 @@ class Result extends Component {
     const { roommates } = this.state;
     //console.log("1", { roomSS: roommates });
 
-    Object.entries(roommates).forEach(
-      ([key, value]) => (key, value.lastNameR)
-  );
+    roommates.forEach(mate => console.log(mate.roommate.lastNameR))
+
     // for (const mate in roommates ) {
     //    return (
     //     <div>{roommates[mate].lastNameR}</div>
@@ -100,11 +99,13 @@ class Result extends Component {
                 </Typography>
               </Grid>
               <Container>
-                <div>{
+                <div>
+                  {
+                  roommates.map(mate=>
+                    <Typography component="h1" variant="h3"> {mate.roommate.lastNameR}</Typography> 
+                     )
                   
-                  Object.entries(roommates).forEach(
-                    ([key, value]) => <Typography variant="h5" component="h4">{key, value}</Typography>
-                )}
+                  }
 
                 </div>
                 <Box>
