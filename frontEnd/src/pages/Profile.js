@@ -113,13 +113,13 @@ class Profile extends Component {
                   Datos personales
                 </Typography>
                 <hr></hr>
-                <Typography variant="h5" component="h4" mt="4">
+                <Typography variant="h5" component="h4"  mt="4">
                   {bull} Nombre: {name}
                 </Typography><br></br>
-                <Typography  variant="h5" component="h4">
+                <Typography  variant="h5" component="h4" mt="4">
                 {bull} Apellidos: {lastname}
                 </Typography><br></br>
-                <Typography  variant="h5" component="h4">
+                <Typography  variant="h5" component="h4" mt="4">
                 {bull} Cuarto Compartido: {roomtext}
             </Typography>
               </CardContent>

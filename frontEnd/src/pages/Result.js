@@ -1,4 +1,4 @@
-import React, { Component,useEffect,useState} from "react";
+import React, { Component } from "react";
 import Button from "@material-ui/core/Button";
 import Grid from "@material-ui/core/Grid";
 import CssBaseline from "@material-ui/core/CssBaseline";
@@ -13,30 +13,6 @@ import axios from "axios";
 
 const { Typography } = atoms;
 
-// const roommatesTest = [
-//   {
-//     name: "Douglas",
-//     lastName: "rodriguez"
-//   },
-//   {
-//     name: "Carlos",
-//     lastName: "Garcia"
-//   },
-//   {
-//     name: "Jose ",
-//     lastName: "Aquino"
-//   },
-//   {
-//     name: "Clara",
-//     lastName: "Romes"
-//   },
-// ];
-// let theArray = [
-//   {
-//     nameR: '',
-//     latsName: '',
-//   }
-// ]
 class Result extends Component {
   //const [state,setState] = useState();
   constructor(props) {
@@ -45,20 +21,19 @@ class Result extends Component {
       roommates: [],
     };
   }
-  
+
   //useEffect((props) => {
-    // Actualiza el título del documento usando la API del navegador
-    
+  // Actualiza el título del documento usando la API del navegador
+
   //});
-   // let token = sessionStorage.getItem("token");
-   /* axios.get("/api/result", { headers: { "x-access-token" :token}})
+  // let token = sessionStorage.getItem("token");
+  /* axios.get("/api/result", { headers: { "x-access-token" :token}})
     .then(res => res.json())
     .then((result)=>{
       //theArray[0].nameR = result.nameR;
       //console.log(result);
 
     })*/
-  
 
   componentWillMount() {
     let token = sessionStorage.getItem("token");
@@ -76,19 +51,37 @@ class Result extends Component {
             tmArray.push(data.result[i].nameR,data.result[i].lastNameR);
           }
           this.setState({ roommates: tmArray });*/
-          this.setState({roommates:response.data})
-          let rommate2 = [] 
-          this.state.roommates.matches.map(x=>{
-            rommate2.push(x)
-          })
-          this.setState({roommates:rommate2})
-          }
+          let roommatesD = response.data;
+          let rommate2 = [];
+          roommatesD.matches.map((x) => {
+            rommate2.push(x);
+          });
+
+          this.setState({ roommates: rommate2 });
+          // console.log(this.state.roommates)
         }
-      )
+      });
   }
-  
-  
+
   render() {
+    const { roommates } = this.state;
+    //console.log("1", { roomSS: roommates });
+
+    Object.entries(roommates).forEach(
+      ([key, value]) => (key, value.lastNameR)
+  );
+    // for (const mate in roommates ) {
+    //    return (
+    //     <div>{roommates[mate].lastNameR}</div>
+    //     <div>{roommates[mate].nameR}</div>
+    //     <div>{roommates[mate].room_id}</div>
+    //    )
+         
+    // }
+    // for (const [roommates, value] of elements.entries()) {
+    //   items.push(<li key={index}>{value}</li>)
+    // }
+
     return (
       <React.Fragment>
         <CssBaseline />
@@ -107,31 +100,18 @@ class Result extends Component {
                 </Typography>
               </Grid>
               <Container>
-                <h1>
-                {this.state.roommates[0]}
-                </h1>
-                {/* {this.state.roommates} */}
-                {/* {this.state.roommates.map((option) => (
-                  <Card  variant="outlined">
-                  <Typography variant="h5" component="h2">
-                  {option.nameR}
-               </Typography>
-               <Typography variant="h5" component="h2">
-                  {option.lastNameR}
-               </Typography>
-                      </Card>
-                    ))}    */}
-              </Container>
-              {/* <Card variant="outlined">
+                <div>{
+                  
+                  Object.entries(roommates).forEach(
+                    ([key, value]) => <Typography variant="h5" component="h4">{key, value}</Typography>
+                )}
+
+                </div>
+                <Box>
                
-                <Typography variant="h5" component="h2">
-                  Nombre de tu compañero de habitación 
-               </Typography>
-               <br>
-               </br>
-       <br></br>
-       <br></br>
-       <br></br>                </Card> */}
+                 
+                </Box>
+              </Container>
             </Grid>
           </Box>
         </Box>
