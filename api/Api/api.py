@@ -90,7 +90,6 @@ class Matches(db.Model):
 # Token verification
 # Ningun usuario podra acceder a los endpoints sin un token
 
-
 def token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
@@ -111,6 +110,88 @@ def token_required(f):
         return f(current_user, *args, **kwargs)
 
     return decorated
+
+#EndPoints Crear usuario, residente y upgrade to admin
+# Create new user
+@app.route("/api/user", methods=["POST"])
+# @token_required
+def create_user():
+    data = request.get_json()
+    hashed_password = generate_password_hash(data["password"], method="sha256")
+
+    new_user = User(
+        public_id=str(uuid.uuid4()),
+        userName=data["userName"],
+        password=hashed_password,
+        admin=False,
+    )
+    db.session.add(new_user)
+    db.session.commit()
+
+    return jsonify({"message": "New user created!"})
+
+
+# Create residente ( public_id = user.public_id, name, lastName, sharedRoom (True or false))
+# json { "name": "name", "lastName": "lastname", "sharedRoom": "1/0"}
+@app.route("/api/residente/<public_id>", methods=["POST"])
+@token_required
+def create_resident(current_user, public_id):
+
+    if not current_user.admin:
+        return jsonify({"message": "Cannot perform that function!"})
+
+    data = request.get_json()
+    user = User.query.filter_by(public_id=public_id).first()
+
+    if not user:
+        return jsonify({"message": "Dude, no user found ! :("}), 404
+
+    new_resident = Residents(
+        public_id=public_id,
+        name=data["name"],
+        lastName=data["lastName"],
+        sharedRoom=data["sharedRoom"],
+    )
+
+    db.session.add(new_resident)
+    db.session.commit()
+
+    return jsonify({"message": "New resident created!"}), 200
+
+
+# Promover usuario a admin , solo un admin puede hacer eso
+@app.route("/api/user/<public_id>", methods=["PUT"])
+@token_required
+def promote_user(current_user, public_id):
+
+    user = User.query.filter_by(public_id=public_id).first()
+
+    if not user:
+        return jsonify({"message": "Dude, no user found ! :("})
+
+    user.admin = True
+    db.session.commit()
+    return jsonify({"message": "user has been promoted!"})
+
+# borrar un usuario, solo un admin podra
+@app.route("/api/user/<public_id>", methods=["DELETE"])
+@token_required
+def delete_user(current_user, public_id):
+
+    if not current_user.admin:
+        return jsonify({"message": "Cannot perform that function!"})
+
+    user = User.query.filter_by(public_id=public_id).first()
+
+    if not user:
+        return jsonify({"message": "No user found!"})
+
+    db.session.delete(user)
+    db.session.commit()
+
+    return jsonify({"message": "The user has been deleted!"})
+
+
 
 
 # EndPoints
@@ -200,85 +281,6 @@ def get_one_user(current_user, public_id):
     return jsonify({"user": user_data})
 
 
-# Create new user
-@app.route("/api/user", methods=["POST"])
-# @token_required
-def create_user():
-    data = request.get_json()
-    hashed_password = generate_password_hash(data["password"], method="sha256")
-
-    new_user = User(
-        public_id=str(uuid.uuid4()),
-        userName=data["userName"],
-        password=hashed_password,
-        admin=False,
-    )
-    db.session.add(new_user)
-    db.session.commit()
-
-    return jsonify({"message": "New user created!"})
-
-
-# Create residente ( public_id = user.public_id, name, lastName, sharedRoom (True or false))
-# json { "name": "name", "lastName": "lastname", "sharedRoom": "1/0"}
-@app.route("/api/residente/<public_id>", methods=["POST"])
-@token_required
-def create_resident(current_user, public_id):
-
-    if not current_user.admin:
-        return jsonify({"message": "Cannot perform that function!"})
-
-    data = request.get_json()
-    user = User.query.filter_by(public_id=public_id).first()
-
-    if not user:
-        return jsonify({"message": "Dude, no user found ! :("}), 404
-
-    new_resident = Residents(
-        public_id=public_id,
-        name=data["name"],
-        lastName=data["lastName"],
-        sharedRoom=data["sharedRoom"],
-    )
-
-    db.session.add(new_resident)
-    db.session.commit()
-
-    return jsonify({"message": "New resident created!"}), 200
-
-
-# Promover usuario a admin , solo un admin puede hacer eso
-@app.route("/api/user/<public_id>", methods=["PUT"])
-@token_required
-def promote_user(current_user, public_id):
-
-    user = User.query.filter_by(public_id=public_id).first()
-
-    if not user:
-        return jsonify({"message": "Dude, no user found ! :("})
-
-    user.admin = True
-    db.session.commit()
-    return jsonify({"message": "user has been promoted!"})
-
-
-# borrar un usuario, solo un admin podra
-@app.route("/api/user/<public_id>", methods=["DELETE"])
-@token_required
-def delete_user(current_user, public_id):
-
-    if not current_user.admin:
-        return jsonify({"message": "Cannot perform that function!"})
-
-    user = User.query.filter_by(public_id=public_id).first()
-
-    if not user:
-        return jsonify({"message": "No user found!"})
-
-    db.session.delete(user)
-    db.session.commit()
-
-    return jsonify({"message": "The user has been deleted!"})
 
 
 # Login , comprueba credenciales, genera token el cual se necesita para acceder a los endpoints
@@ -323,6 +325,34 @@ def ver_perfil(current_user):
     resident_data["sharedRoom"] = resident.sharedRoom
     return jsonify({"resident": resident_data})
 
+# get your personal result with your token xd
+@app.route("/api/result", methods=["GET"])
+@token_required
+def get_result(current_user):
+
+    resident = Residents.query.filter_by(public_id=current_user.public_id).first()
+
+    if not resident:
+        return jsonify({"message": "Dude, no resident found"}), 404
+
+    matchR = Matches.query.filter_by(user_id=resident.public_id).first()
+    if not matchR:
+        return jsonify({"message": " Not result in match :("}), 404
+
+    matchAll = Matches.query.filter_by(room_id=matchR.room_id).all()
+
+    output = []
+
+    for match in matchAll:
+        match_data = {}
+        resident = Residents.query.filter_by(public_id=match.user_id).first()
+        if resident.public_id != current_user.public_id:
+            match_data["room_id"] = match.room_id
+            match_data["nameR"] = resident.name
+            match_data["lastNameR"] = resident.lastName
+            output.append(match_data)
+
+    return jsonify({"matches": output})
 
 # EndPoint test
 # Hacer test, crea el test en base al currente user osea que el usuario que llame al endpoint de test guardara eso
@@ -352,6 +382,8 @@ def create_test(current_user):
     db.session.commit()
 
     return jsonify({"message": "Test created!!!"})
+
+
 
 
 # obtener un test de usuario especifico
@@ -384,10 +416,7 @@ def get_one_test(current_user, public_id):
     test_data["personalidad"] = test.personalidad
     return jsonify({"test": test_data})
 
-
 # get all test avaible
-
-
 @app.route("/api/allTest", methods=["GET"])
 @token_required
 def get_all_test(current_user):
@@ -420,67 +449,7 @@ def get_all_test(current_user):
 
     return jsonify({"tests": output})
 
-
-# Get all tests and make ia
-
-
-@app.route("/api/ia/matchs", methods=["GET"])
-# @token_required
-# def get_all_test(current_user):
-def matchs_ia():
-
-    # if not current_user.admin:
-    #     return jsonify({'message' : 'Cannot perform that function!'})
-
-    tests = TestR.query.all()
-
-    dataSet = []
-    trans_tab = dict.fromkeys(map(ord, u"\u0301\u0308"), None)
-    for test in tests:
-        # test_data = {}
-        resident = Residents.query.filter_by(public_id=test.public_id).first()
-        test_data = (
-            str(resident.id)
-            + test.gender
-            + str(test.age)
-            + test.musicGender
-            + test.sport
-            + test.hobbie
-            + test.movieSeries
-            + test.filmGender
-            #   + test.tabaco
-            #   + test.alcohol
-            #   + test.party
-            #   + str(test.ordenConvivencia)
-            #   + str(test.ordenPersonal)
-            + test.personalidad
-        )
-        test_data = normalize("NFKC", normalize("NFKD", test_data).translate(trans_tab))
-        dataSet.append(test_data)
-
-    distans = [
-        distance.edit_distance(dataSet[i], dataSet[j])
-        for i in range(1, len(dataSet))
-        for j in range(0, i)
-    ]
-
-    labels, error, nfound = PC.kmedoids(distans, nclusters=2, npass=10000000)
-    cluster = dict()
-    output = []
-    for roommate, label in zip(dataSet, labels):
-        cluster.setdefault(label, []).append(roommate)
-    for label, grp in cluster.items():
-        cluster_data = {}
-        cluster_data["Roommate"] = grp
-        cluster_data["label"] = str(label)
-        output.append(cluster_data)
-
-    return jsonify({"tests": output}, {"error": error}, {"nfound": nfound})
-
-
 # get all test  hombre
-
-
 @app.route("/api/test/Hombre", methods=["GET"])
 @token_required
 def get_all_test_men(current_user):
@@ -512,7 +481,6 @@ def get_all_test_men(current_user):
         output.append(test_data)
 
     return jsonify({"tests": output})
-
 
 # get all test  Mujer
 @app.route("/api/test/Mujer", methods=["GET"])
@@ -547,6 +515,173 @@ def get_all_test_female(current_user):
 
     return jsonify({"tests": output})
 
+#Hacer la IA para todos los residentes 
+@app.route("/api/ia/matchs", methods=["GET"])
+# @token_required
+# def get_all_test(current_user):
+def matchs_ia():
+
+    # if not current_user.admin:
+    #     return jsonify({'message' : 'Cannot perform that function!'})
+
+    tests = TestR.query.all()
+
+    dataSet = []
+    trans_tab = dict.fromkeys(map(ord, u"\u0301\u0308"), None)
+    for test in tests:
+        # test_data = {}
+        resident = Residents.query.filter_by(public_id=test.public_id).first()
+        test_data = (
+            str(resident.id)
+            + "-"
+            + test.gender
+            + str(test.age)
+            + test.musicGender
+            + test.sport
+            + test.hobbie
+            + test.movieSeries
+            + test.filmGender
+            #+ test.tabaco
+            #+ test.alcohol
+           # + test.party
+           # + str(test.ordenConvivencia)
+           # + str(test.ordenPersonal)
+            + test.personalidad
+        )
+        test_data = normalize("NFKC", normalize("NFKD", test_data).translate(trans_tab))
+        dataSet.append(test_data)
+
+    distans = [
+        distance.edit_distance(dataSet[i], dataSet[j])
+        for i in range(1, len(dataSet))
+        for j in range(0, i)
+    ]
+
+    labels, error, nfound = PC.kmedoids(distans, nclusters=2, npass=1000)
+    cluster = dict()
+    output = []
+    for roommate, label in zip(dataSet, labels):
+        cluster.setdefault(label, []).append(roommate)
+    for label, grp in cluster.items():
+        cluster_data = {}
+        cluster_data["Roommate"] = grp
+        cluster_data["label"] = str(label)
+        output.append(cluster_data)
+
+    return jsonify({"testsALL": output}, {"error": error}, {"nfound": nfound})
+
+#Hacer los emparejamientos para hombres
+
+@app.route("/api/ia/matchsHombres", methods=["GET"])
+# @token_required
+# def get_all_test(current_user):
+def matchs_ia_hombres():
+
+    # if not current_user.admin:
+    #     return jsonify({'message' : 'Cannot perform that function!'})
+
+    tests = TestR.query.filter_by(gender="masculino").all()
+
+    dataSet = []
+    #Quitar asentos, ñ , etc..
+    trans_tab = dict.fromkeys(map(ord, u"\u0301\u0308"), None)
+    for test in tests:
+        resident = Residents.query.filter_by(public_id=test.public_id).first()
+        test_data = (
+            str(resident.id)
+            + "-"
+            #+ test.gender
+            + str(test.age)
+            + test.musicGender
+            + test.sport
+            + test.hobbie
+            + test.movieSeries
+            + test.filmGender
+            + test.tabaco
+            + test.alcohol
+            + test.party
+            + str(test.ordenConvivencia)
+            + str(test.ordenPersonal)
+            + test.personalidad
+        )
+        test_data = normalize("NFKC", normalize("NFKD", test_data).translate(trans_tab))
+        dataSet.append(test_data)
+
+    distans = [
+        distance.edit_distance(dataSet[i], dataSet[j])
+        for i in range(1, len(dataSet))
+        for j in range(0, i)
+    ]
+
+    labels, error, nfound = PC.kmedoids(distans, nclusters=3, npass=100)
+    cluster = dict()
+    output = []
+    for roommate, label in zip(dataSet, labels):
+        cluster.setdefault(label, []).append(roommate)
+    for label, grp in cluster.items():
+        cluster_data = {}
+        cluster_data["Roommate"] = grp
+        cluster_data["label"] = str(label)
+        output.append(cluster_data)
+
+    return jsonify({"testsHombres": output}, {"error": error}, {"nfound": nfound})
+
+#Hacer los emparejamientos para mujeres
+
+@app.route("/api/ia/matchsMujeres", methods=["GET"])
+# @token_required
+# def get_all_test(current_user):
+def matchs_ia_mujeres():
+
+    # if not current_user.admin:
+    #     return jsonify({'message' : 'Cannot perform that function!'})
+
+    tests = TestR.query.filter_by(gender="femenino").all()
+
+    dataSet = []
+    #Quitar asentos, ñ , etc..
+    trans_tab = dict.fromkeys(map(ord, u"\u0301\u0308"), None)
+    for test in tests:
+        resident = Residents.query.filter_by(public_id=test.public_id).first()
+        test_data = (
+            str(resident.id)
+            #+ test.gender
+            + str(test.age)
+            + test.musicGender
+            + test.sport
+            + test.hobbie
+            + test.movieSeries
+            + test.filmGender
+            + test.tabaco
+            + test.alcohol
+            + test.party
+            + str(test.ordenConvivencia)
+            + str(test.ordenPersonal)
+            + test.personalidad
+        )
+        test_data = normalize("NFKC", normalize("NFKD", test_data).translate(trans_tab))
+        dataSet.append(test_data)
+
+    distans = [
+        distance.edit_distance(dataSet[i], dataSet[j])
+        for i in range(1, len(dataSet))
+        for j in range(0, i)
+    ]
+
+    labels, error, nfound = PC.kmedoids(distans, nclusters=3, npass=100)
+    cluster = dict()
+    output = []
+    for roommate, label in zip(dataSet, labels):
+        cluster.setdefault(label, []).append(roommate)
+    for label, grp in cluster.items():
+        cluster_data = {}
+        cluster_data["Roommate"] = grp
+        cluster_data["label"] = str(label)
+        output.append(cluster_data)
+
+    return jsonify({"testsMujeres": output}, {"error": error}, {"nfound": nfound})
+
+
 
 # make a room
 @app.route("/api/room", methods=["POST"])
@@ -565,10 +700,7 @@ def create_room(current_user):
 
     return jsonify({"message": "New room created !"})
 
-
 # update state of room
-
-
 @app.route("/api/room/<room_id>", methods=["PUT"])
 @token_required
 def update_state_room(current_user, room_id):
@@ -631,12 +763,6 @@ def get_all_rooms(current_user):
 
 # agregar resident a una habitación o asociar una habitación a un resident
 # post
-# class Matches(db.Model):
-#     id = db.Column(db.Integer, primary_key=True)
-#     user_id = db.Column(db.Integer)
-#     room_id = db.Column(db.Integer)
-
-
 @app.route("/api/match/<room_id>/<public_id>", methods=["POST"])
 @token_required
 def add_room_to_resident(current_user, room_id, public_id):
@@ -658,7 +784,6 @@ def add_room_to_resident(current_user, room_id, public_id):
     db.session.commit()
 
     return jsonify({"message": "New match add!"})
-
 
 # End point dar los resultados en tabla matchets con id room
 @app.route("/api/match/<room_id>", methods=["GET"])
@@ -691,34 +816,6 @@ def get_matchs_room(current_user, room_id):
     return jsonify({"matches": output})
 
 
-# get your personal result with your token xd
-@app.route("/api/result", methods=["GET"])
-@token_required
-def get_result(current_user):
-
-    resident = Residents.query.filter_by(public_id=current_user.public_id).first()
-
-    if not resident:
-        return jsonify({"message": "Dude, no resident found"}), 404
-
-    matchR = Matches.query.filter_by(user_id=resident.public_id).first()
-    if not matchR:
-        return jsonify({"message": " Not result in match :("}), 404
-
-    matchAll = Matches.query.filter_by(room_id=matchR.room_id).all()
-
-    output = []
-
-    for match in matchAll:
-        match_data = {}
-        resident = Residents.query.filter_by(public_id=match.user_id).first()
-        if resident.public_id != current_user.public_id:
-            match_data["room_id"] = match.room_id
-            match_data["nameR"] = resident.name
-            match_data["lastNameR"] = resident.lastName
-            output.append(match_data)
-
-    return jsonify({"matches": output})
 
 
 @app.route("/api/ia", methods=["GET"])
