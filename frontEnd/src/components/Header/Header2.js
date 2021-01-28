@@ -40,7 +40,7 @@ const Header = () => (
         <Grid item md>
           <Grid container>
             {/* <Link to={`/Profile/${user.id}`} id="link"> <Link to="/Profile/1" id="link"> */}
-            <Link /*to={`/Profile/${sessionStorage.getItem("idUser")}`}*/ id="link">
+            <Link  to={"/Profile"}  id="link">
               <IconButton>
                 <Person />
               </IconButton>

@@ -62,7 +62,7 @@ class Profile extends Component {
     this.state={
       name: "",
       lastname: "",
-      sharedRoom: "- -"
+      sharedRoom: ""
     }
   }
 
@@ -83,115 +83,13 @@ class Profile extends Component {
 
 
   }
-  /*
-  constructor(props) {
-    super(props);
-    this.state = {
-      transactions: [],
-      username: "",
-      email: "",
-      popcorns_global: 0,
-      followers: [],
-      following: [],
-      favorites: [],
-      watched: [],
-      inTheWorks: [],
-      messageButton: "",
-      reviews: [],
-      numPopcorns: 0
-    };
-
-    this.checkUser = this.checkUser.bind(this);
-    this.handleOnClick = this.handleOnClick.bind(this);
-
-  }
  
-  componentDidUpdate(prevProps) {
-    const {
-      match: {
-        params: { userId: prevUserId }
-      }
-    } = prevProps;
-
-    const {
-      match: {
-        params: { userId }
-      }
-    } = this.props;
-    if (userId !== prevUserId) {
-      this.checkUser();
-      this.fetchDataUser(userId);
-    }
-  }
-  
-
-  fetchDataUser = id => {
-    Axios.get(`/user/${id}`)
-      .then(response => {
-        return response.data;
-      })
-      .then(dataUser => {
-        this.setState({
-          transactions: dataUser.transactions,
-          username: dataUser.username,
-          email: dataUser.email,
-          popcorns_global: dataUser.popcorns_global,
-          followers: dataUser.followers,
-          following: dataUser.Following,
-          reviews: dataUser.reviews
-        });
-        this.getFollowers(dataUser.followers);
-        this.getFollowing(dataUser.Following);
-        this.handlePopcorns();
-        this.handleFavorites();
-        this.handleWatched();
-        this.handleInTheWorks();
-      });
-  };
-
-
-  checkUser() {
-    const {
-      match: {
-        params: { userId }
-      }
-    } = this.props;
-    if (sessionStorage.getItem("idUser") !== userId) {
-      if (
-        JSON.parse(localStorage.getItem("Following")).filter(
-          user => userId == user
-        ).length > 0
-      ) {
-        this.setState({ messageButton: "Dejar de seguir" });
-      } else {
-        this.setState({ messageButton: "Seguir" });
-      }
-    }
-  }
-
-  handleOnClick(userId) {
-    let oldFollowing = JSON.parse(localStorage.getItem("Following"));
-    if (oldFollowing.filter(user => userId == user).length > 0) {
-      oldFollowing = oldFollowing.filter(user => userId != user);
-      localStorage.setItem("Following", JSON.stringify(oldFollowing));
-      this.handleDejarDeSeguir(userId);
-    } else {
-      oldFollowing.push(userId);
-      localStorage.setItem("Following", JSON.stringify(oldFollowing));
-      this.handleSeguir(userId);
-    }
-  }
-
-*/
-
-
-
   render() {
 
     
     const bull = <span className={"bullet"}>•</span>;
     const { name, lastname, sharedRoom } = this.state;
-    const roomtext = (sharedRoom==0) ? "null" : sharedRoom;
+    const roomtext = (sharedRoom==0) ? "No"  : "si";
     
     return (
       <React.Fragment>
@@ -200,7 +98,7 @@ class Profile extends Component {
         <Grid>
           <Box
             component="main"
-            maxWidth={"auto"}
+            maxWidth={"600px"}
             margin="auto"
             padding="120px 30px 0"
           >
@@ -208,25 +106,23 @@ class Profile extends Component {
             <Card className={"root"} variant="outlined">
               <CardContent>
                 <Typography
-                  className={"title"}
-                  color="textSecondary"
-                  gutterBottom
+                  color="textPrimary"
+                  variant="h3"
+                  component="h3"
                 >
                   Datos personales
                 </Typography>
-                <Typography variant="h5" component="h2">
+                <hr></hr>
+                <Typography variant="h5" component="h4" mt="4">
                   {bull} Nombre: {name}
-                </Typography>
-                <Typography  variant="h5" component="h2">
+                </Typography><br></br>
+                <Typography  variant="h5" component="h4">
                 {bull} Apellidos: {lastname}
-                </Typography>
-                <Typography className={"pos"} color="textSecondary">
-                Cuarto Compartido: {roomtext}
+                </Typography><br></br>
+                <Typography  variant="h5" component="h4">
+                {bull} Cuarto Compartido: {roomtext}
             </Typography>
               </CardContent>
-              <CardActions>
-                <Button size="small">Learn More</Button>
-              </CardActions>
             </Card>
             </Box>
             

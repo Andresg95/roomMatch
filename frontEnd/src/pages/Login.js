@@ -18,9 +18,11 @@ class Login extends React.Component {
     this.state = {
       authenticated: false,
       defaultErrorMessage: "",
+      admin: false
     };
     this.authenticate = this.authenticate.bind(this);
     this.renderRedirect = this.renderRedirect.bind(this);
+
   }
 
 
@@ -38,10 +40,12 @@ class Login extends React.Component {
         })
           .then(response => {
             if (!response.err) {
-              console.log("perro", {response});
               sessionStorage.setItem("token", response.data.token);
               this.setState({ authenticated: true, id: response.data.id });
+              this.setState({ admin: response.data.admin });
+              console.log(response.data.admin);
               this.renderRedirect();  
+        
             }
           })
           .catch(e => {
@@ -68,11 +72,20 @@ class Login extends React.Component {
   
       renderRedirect() {
         console.log("redirect", this.state);
-        if (this.state.authenticated) {
+        if (this.state.authenticated&&!this.state.admin) {
           this.props.history.push("/Home");
+        }else{
+          this.props.history.push("/HomeUA");
         }
       }
-      
+/*
+      renderRedirectUA(){
+        console.log("redirect", this.state);
+        if (this.state.authenticated) {
+          this.props.history.push("/HomeUA");
+        }
+      }
+      */
 
       
 

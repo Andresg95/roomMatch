@@ -9,6 +9,7 @@ import withTheme from "./withTheme";
 import Box from "@material-ui/core/Box";
 import { Link } from "react-router-dom";
 import { Card, CardActions, Container } from "@material-ui/core";
+import axios from "axios";
 
 
 
@@ -34,6 +35,47 @@ const roommatesTest = [
 ];
 
 class Result extends Component {
+
+  constructor(props){
+    super(props);
+    this.state={
+
+      room : "",
+      nameR : [],
+      lastNameR : []
+      
+    }
+
+  }
+
+  componentWillMount(){
+
+    let token = sessionStorage.getItem("token");
+    axios.get("/api/result", { headers : {
+      "x-access-token" : token
+    }})
+    .then(response=>{
+      if (!response.err){
+        return response.data;
+      }
+    })
+    .then(dataUser =>{
+      
+    })
+
+
+   /* 
+    axios.get("/api/perfil", { headers : {
+      "x-access-token" : token
+    }})
+    .then(response=>{
+      if (!response.err) {
+        let {resident} = response.data;
+        this.setState({name : resident.name, lastname: resident.lastName, sharedRoom: resident.sharedRoom})
+         
+      }
+    })*/
+  }
   render() {
     return (
       <React.Fragment>
