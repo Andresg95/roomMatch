@@ -2,8 +2,9 @@ import React, { Component } from "react";
 import Button from "@material-ui/core/Button";
 import Grid from "@material-ui/core/Grid";
 import CssBaseline from "@material-ui/core/CssBaseline";
+import { makeStyles } from "@material-ui/core/styles";
 import atoms from "../components/atoms";
-import Header from "../components/Header/Header1";
+import Header from "../components/Header/Header2";
 import theme from "../theme/instapaper/theme";
 import withTheme from "./withTheme";
 import Box from "@material-ui/core/Box";
@@ -11,7 +12,38 @@ import { Link } from "react-router-dom";
 import { Card, CardActions, Container } from "@material-ui/core";
 import axios from "axios";
 
+import CardContent from "@material-ui/core/CardContent";
 const { Typography } = atoms;
+
+const useStyles = makeStyles({
+  editButton: {
+    marginLeft: 0,
+    marginTop: 12,
+    [theme.breakpoints.up("sm")]: {
+      marginLeft: 20,
+      marginTop: 0,
+    },
+  },
+  settings: {
+    [theme.breakpoints.up("sm")]: {
+      marginLeft: 5,
+    },
+  },
+  root: {
+    minWidth: 275,
+  },
+  bullet: {
+    display: "inline-block",
+    margin: "0 2px",
+    transform: "scale(0.8)",
+  },
+  title: {
+    fontSize: 14,
+  },
+  pos: {
+    marginBottom: 12,
+  },
+});
 
 class Result extends Component {
   //const [state,setState] = useState();
@@ -21,19 +53,6 @@ class Result extends Component {
       roommates: [],
     };
   }
-
-  //useEffect((props) => {
-  // Actualiza el título del documento usando la API del navegador
-
-  //});
-  // let token = sessionStorage.getItem("token");
-  /* axios.get("/api/result", { headers: { "x-access-token" :token}})
-    .then(res => res.json())
-    .then((result)=>{
-      //theArray[0].nameR = result.nameR;
-      //console.log(result);
-
-    })*/
 
   componentWillMount() {
     let token = sessionStorage.getItem("token");
@@ -45,77 +64,67 @@ class Result extends Component {
       })
       .then((response) => {
         if (!response.err) {
-          /*let tmArray = [];
-          let [data] = response.data;
-          for (let i = 0; i < data.result.lenght; i++) {
-            tmArray.push(data.result[i].nameR,data.result[i].lastNameR);
-          }
-          this.setState({ roommates: tmArray });*/
           let roommatesD = response.data;
           let rommate2 = [];
           roommatesD.matches.map((x) => {
-            rommate2.push({"roommate":x});
+            rommate2.push({ roommate: x });
           });
-
           this.setState({ roommates: rommate2 });
-          // console.log(this.state.roommates)
         }
       });
   }
 
   render() {
     const { roommates } = this.state;
-    //console.log("1", { roomSS: roommates });
-
-    roommates.forEach(mate => console.log(mate.roommate.lastNameR))
-
-    // for (const mate in roommates ) {
-    //    return (
-    //     <div>{roommates[mate].lastNameR}</div>
-    //     <div>{roommates[mate].nameR}</div>
-    //     <div>{roommates[mate].room_id}</div>
-    //    )
-         
-    // }
-    // for (const [roommates, value] of elements.entries()) {
-    //   items.push(<li key={index}>{value}</li>)
-    // }
+    roommates.forEach((mate) => console.log(mate.roommate.lastNameR));
 
     return (
       <React.Fragment>
         <CssBaseline />
         <Header />
-        <Box
-          component="main"
-          maxWidth={"auto"}
-          margin="auto"
-          padding="85px 364px 10px"
-        >
-          <Box width="900">
-            <Grid container spacing={3} display="center">
-              <Grid item ml={12}>
-                <Typography component="h1" variant="h3">
-                  Resultados
-                </Typography>
+        <Grid >
+          <Box
+            component="main"
+            maxWidth={"1000px"}
+            margin="auto"
+            padding="120px 30px 0"
+          >
+            <Box mb="25px">
+            <Grid item md={12}>
+                  <Typography component="h1" variant="h3">
+                    Resultados
+                  </Typography>
+                </Grid>
+            </Box>
+            <Box mb="10px">
+            <Grid container
+                  justify="center"
+                  alignItems="flex-start"
+                  spacing={4}>
+              {roommates.map((mate) => (
+                 <Grid item mb={6}>
+                <Card className={"root"} variant="outlined" >
+                  <CardContent >
+                    <Typography color="textPrimary" variant="h3" component="h3">
+                      Roommate
+                    </Typography>
+                    <hr></hr>
+                    <Typography variant="h5" component="h4" mt="4">
+                      Nombre: {mate.roommate.nameR}
+                    </Typography>
+                    <br></br>
+                    <Typography variant="h5" component="h4" mt="4">
+                      Apellidos: {mate.roommate.lastNameR}
+                    </Typography>
+                    <br></br>
+                  </CardContent>
+                </Card>
+                </Grid>
+              ))}
               </Grid>
-              <Container>
-                <div>
-                  {
-                  roommates.map(mate=>
-                    <Typography component="h1" variant="h3"> {mate.roommate.lastNameR}</Typography> 
-                     )
-                  
-                  }
-
-                </div>
-                <Box>
-               
-                 
-                </Box>
-              </Container>
-            </Grid>
+            </Box>
           </Box>
-        </Box>
+        </Grid>
       </React.Fragment>
     );
   }

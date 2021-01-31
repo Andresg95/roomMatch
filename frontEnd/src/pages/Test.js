@@ -56,8 +56,8 @@ const useStyles = makeStyles({
 });
 
 const Tsexo = [
-  { value: "masculino", label: "Masculino" },
-  { value: "femenino", label: "Femenino" },
+  { value: "Hombre", label: "Masculino" },
+  { value: "Mujer", label: "Femenino" },
 ];
 
 const TseriesMovie = [
