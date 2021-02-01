@@ -76,7 +76,7 @@ class Result extends Component {
 
   render() {
     const { roommates } = this.state;
-    roommates.forEach((mate) => console.log(mate.roommate.lastNameR));
+    //roommates.forEach((mate) => console.log(mate.roommate.lastNameR));
 
     return (
       <React.Fragment>
