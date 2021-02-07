@@ -1597,7 +1597,7 @@ INSERT INTO `user` (`id`, `public_id`, `userName`, `password`, `admin`) VALUES
 (487, 'd28a19ca-0786-42dc-a6b3-1da08a6d8a8b', 'Catherine.Stewart', 'sha256$OFDavSaL$d0c19e8571b426ce5db30b8da7bf14a869ad211937bfb9e33db839993940d098', 0),
 (488, 'd15676d2-d5ef-4c03-8432-1b77c945c222', 'Michelle.Fitzgerald', 'sha256$4M2HXSps$09f20ea9df158f744aa1d52bc441dfe3545c21300b7a8cad1d81fec9a3ef280b', 0),
 (489, '656fe03c-da38-4b7b-90a8-e2a07ee68905', 'douglas.rodriguez', 'sha256$SYQsE2Xt$85b93d07bcd19eacd5435e8ab60e925e67791bc9ddcbef5457bf8b9b356d2e1c', 0);
-
+ 
 --
 -- Índices para tablas volcadas
 --

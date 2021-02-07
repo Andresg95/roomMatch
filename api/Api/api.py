@@ -133,14 +133,6 @@ def create_user():
     return jsonify({"message": "New user created!"})
 
 
-# print(f'Name: {faker.name()}')
-# print(f'First name: {faker.first_name()}')
-# print(f'Last name: {faker.last_name()}')
-# print(f'Male name: {faker.name_male()}')
-# print(f'Female name: {faker.name_female()}')
-# Mujeres 301 
-#Hombres 186 - 5
-
 @app.route("/api/fakeuserHomber", methods=["POST"])
 def create_hombres():
 
@@ -505,56 +497,6 @@ def create_test(current_user):
     db.session.commit()
 
     return jsonify({"message": "Test created!!!"})
-# Estructura
-# {
-#   "Edad" : 18,
-#   "Sexo" : "Hombre",
-#   "GustoMusical" : "Electronica",
-#   "Deporte" : "Futbol",
-#   "Hobbie" : "PlayStation",
-#   "Film" : "Ambas",
-#   "GeneroFilm" : "Accion",
-#   "personalidad" : "Extrovertid@",
-#   "Tabaco" : "No",
-#   "Alcohol" : "No",
-#   "Fiestas" : "Si",
-#   "OrdenLimpiezaPersonal" : 8,
-#   "OrdenLimpiezaDemas" : 8
-# }
-
-# 
-
-# @app.route("/api/testHombreF", methods=["POST"])
-# #@token_required
-# def create_testF_hombres():
-#     users = User.query.all()
-
-#     with open('testM.json') as json_file:
-#      testS = json.load(json_file)
-#     count = 193
-#     for data in testS:
-#         new_test = TestR(
-#             public_id=users[count].public_id,
-#             gender=data["Sexo"],
-#             age=data["Edad"],
-#             musicGender=data["GustoMusical"],
-#             sport=data["Deporte"],
-#             hobbie=data["Hobbie"],
-#             movieSeries=data["Film"],
-#             filmGender=data["GeneroFilm"],
-#             tabaco=data["Tabaco"],
-#             alcohol=data["Alcohol"],
-#             party=data["Fiestas"],
-#             ordenConvivencia=data["OrdenLimpiezaDemas"],
-#             ordenPersonal=data["OrdenLimpiezaPersonal"],
-#             personalidad=data["personalidad"],
-#         )
-#         count += 1
-#         db.session.add(new_test)
-#         db.session.commit()
-
-#     return jsonify({"message": "yes"})
-
 
 # obtener un test de usuario especifico
 @app.route("/api/test/<public_id>", methods=["GET"])
@@ -626,7 +568,7 @@ def get_all_test_men(current_user):
     if not current_user.admin:
         return jsonify({"message": "Cannot perform that function!"})
 
-    tests = TestR.query.filter_by(gender="masculino").all()
+    tests = TestR.query.filter_by(gender="Hombre").all()
 
     output = []
 
@@ -659,7 +601,7 @@ def get_all_test_female(current_user):
     if not current_user.admin:
         return jsonify({"message": "Cannot perform that function!"})
 
-    tests = TestR.query.filter_by(gender="femenino").all()
+    tests = TestR.query.filter_by(gender="Mujer").all()
 
     output = []
 
@@ -711,11 +653,11 @@ def matchs_ia():
             + test.hobbie
             + test.movieSeries
             + test.filmGender
-            #+ test.tabaco
-            #+ test.alcohol
-           # + test.party
-           # + str(test.ordenConvivencia)
-           # + str(test.ordenPersonal)
+            + test.tabaco
+            + test.alcohol
+            + test.party
+            + str(test.ordenConvivencia)
+            + str(test.ordenPersonal)
             + test.personalidad
         )
         test_data = normalize("NFKC", normalize("NFKD", test_data).translate(trans_tab))
@@ -1011,8 +953,34 @@ def get_matchs_room(current_user, room_id):
         match_data = {}
         resident = Residents.query.filter_by(public_id=match.user_id).first()
         match_data["room_id"] = match.room_id
-        match_data["Resident Name"] = resident.name
-        match_data["Resident Last Name"] = resident.lastName
+        match_data["nameR"] = resident.name
+        match_data["lastNR"] = resident.lastName
+        output.append(match_data)
+
+    return jsonify({"matches": output})
+
+
+
+@app.route("/api/allMatchs", methods=["GET"])
+@token_required
+def get_all_matches(current_user):
+
+    if not current_user.admin:
+        return jsonify({"message": "Cannot perform that function!"}), 401
+
+    matchAll = Matches.query.all()
+    
+    if not matchAll:
+        return jsonify({"message": "No matches"}), 404
+
+    output = []
+
+    for match in matchAll:
+        match_data = {}
+        resident = Residents.query.filter_by(public_id=match.user_id).first()
+        match_data["room_id"] = match.room_id
+        match_data["nameR"] = resident.name
+        match_data["lastNR"] = resident.lastName
         output.append(match_data)
 
     return jsonify({"matches": output})
@@ -1084,7 +1052,43 @@ def matchs_ia_hombresTest():
     tiempoTF= (time.process_time_ns()-tiempoTI)
     tiempoCF= tiempoCF /60000000000
     tiempoTF= tiempoTF /60000000000
-    
+
+    returnObj = []
+    sizeRooms = 4
+
+    for cluster in outputId:
+        room = []
+        yo= 0
+        for row in cluster.values():
+            num = len(row)
+            #number of tests in cluster
+            residual = num % sizeRooms
+            offset = 1
+            
+            for test in row:
+                #extract and format data
+                x = test.split("-")
+                index = row.index(test)
+                realI = index+1
+                room.append(x[1])
+
+                if realI%sizeRooms == 0:
+                    #add room
+                    yo+=1
+                    print("he",yo)
+                    returnObj.append(room[:])
+                    #empty room
+                    room.clear()
+                if (residual > 0 and realI>sizeRooms*(num//sizeRooms)):
+                    #si residuo es 1, ultima, 2, penultima, 3 antepenutima.
+                    #si % de num es =! 0, (1,2,3) meter en ult, pen, o ante
+                    #number of rooms 
+                    counter=(len(returnObj))-offset
+                    print(counter, x[1], "ok")
+                    returnObj[counter].append(x[1])
+                    offset+=1
+                    
+
     # for cluster in output:
 
     # new_room = Rooms(state="Ocupado")
@@ -1098,11 +1102,11 @@ def matchs_ia_hombresTest():
 
 
     #Asiganar a cuarto 
-     txt = "-1-18ElectronicaFutbolPlayStationAmbasAccionNoNoSi 8 8extro"
-     x = txt.split("-")
-     print(x[1])
+    #  txt = "-1-18ElectronicaFutbolPlayStationAmbasAccionNoNoSi 8 8extro"
+    #  x = txt.split("-")
+    #  print(x[1])
 
-    return jsonify({"testsHombres": outputId})
+    return jsonify({"matchs":returnObj})
 
 
 # if __name__ == '__main__':

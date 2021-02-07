@@ -12,70 +12,100 @@ import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import { Link } from "react-router-dom";
 
+import axios from "axios";
 
 const { Typography } = atoms;
 
 class ValidarResult extends Component {
-  /*
+
+
   constructor(props) {
     super(props);
     this.state = {
-      poster: "",
-      title: "",
-      year: "",
-      genre: "",
-      runtime: "",
-      director: "",
-      writer: "",
-      plot: "",
-      actors: "",
-      imdbid: "",
-      reviews: []
+      rooms: []
     };
-
-
   }
-*/
 
-  /*
-  fetchData(id) {
-    Axios.get(`/movie/${id}`)
-      .then(response => {
-        return response.data;
-      })
-      .then(peliculaData => {
-        this.setState({
-          poster: peliculaData.poster,
-          title: peliculaData.title,
-          year: peliculaData.year,
-          genre: peliculaData.genre,
-          runtime: peliculaData.runtime,
-          director: peliculaData.director,
-          writer: peliculaData.writer,
-          plot: peliculaData.plot,
-          actors: peliculaData.actors,
-          imdbid: peliculaData.imdbid,
-          reviews: peliculaData.reviews || "No reviews yet"
+  componentDidMount(){
+    let token = sessionStorage.getItem("token");
+
+    axios.get("/api/allMatchs",{
+      headers: {
+        "x-access-token" : token,
+      },
+    }).then((response)=>{
+      if(!response.err){
+        let matchesD = response.data;
+        let rooms2 = [];
+        matchesD.matches.map((x) =>{
+          rooms2.push({ rooms: x});
         });
-        console.log("this is imdbid", peliculaData.imdbid);
-        console.log("this in state", this.state.imdbid);
-      });
+        this.setState({rooms: rooms2});
+      }
+    });
   }
-*/
+  
+
+  
 
   render() {
+
+    
+    const { rooms } = this.state;
     return (
       <React.Fragment>
         <CssBaseline />
         <Header />
-
         <Box
           component="main"
           maxWidth={"auto"}
           margin="auto"
           padding="120px 30px 0"
         >
-          <Grid container justify="center" alignItems="baseline">
+          <Box>
+          <Grid container spacing={3}>
+            <Grid item xs={12}>
+            <Typography variant="h4" gutterBottom>
+                  Piso Hombres
+                </Typography>
+            </Grid>
+            {rooms.map((mate) => (
+                <Grid item xs={3}>
+                <Card variant="outlined"  borderColor="primary.main">
+                <CardContent >
+                    <Typography color="textPrimary" variant="h3" component="h3">
+                    Habitación: {mate.rooms.room_id}
+                    </Typography>
+                    <hr></hr>
+                    <Typography variant="h5" component="h4" mt="4">
+                      Nombre: {mate.rooms.nameR}
+                    </Typography>
+                    <br></br>
+                    <Typography variant="h5" component="h4" mt="4">
+                      Apellidos: {mate.rooms.lastNR}
+                    </Typography>
+                    <br></br>
+                  </CardContent>
+                </Card>
+                </Grid>
+
+            ))}
+          
+
+          </Grid>
+          </Box>
+          
+        
+        </Box>
+      </React.Fragment>
+    );
+  }
+}
+
+export default withTheme(theme)(ValidarResult);
+
+/*
+ <Grid container justify="center" alignItems="baseline">
             <Box mb="100px">
               <Grid item md={12}>
                 <Typography variant="h4" gutterBottom>
@@ -213,10 +243,4 @@ class ValidarResult extends Component {
               </Grid>
             </Box>
           </Grid>
-        </Box>
-      </React.Fragment>
-    );
-  }
-}
-
-export default withTheme(theme)(ValidarResult);
+         */

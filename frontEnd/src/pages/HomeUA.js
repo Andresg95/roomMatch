@@ -70,13 +70,8 @@ class HomeUA extends Component {
               </Grid>
               <Grid item md={12}>
               <Button variant="contained" color="primary">
-                  Establecer Fecha
-                </Button>
-              </Grid>
-              <Grid item md={12}>
-              <Button variant="contained" color="primary">
                   Realizar Matchs
-                </Button>
+              </Button>
               </Grid>
             </Grid>
           </Box>

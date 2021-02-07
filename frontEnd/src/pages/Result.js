@@ -90,20 +90,21 @@ class Result extends Component {
             padding="120px 30px 0"
           >
             <Box mb="25px">
-            <Grid item md={12}>
-                  <Typography component="h1" variant="h3">
-                    Resultados
-                  </Typography>
-                </Grid>
+              <Grid item xs={12}  >
+                <Typography  component="h1" variant="h3" >
+                  Resultados
+                </Typography>
+              </Grid>
             </Box>
             <Box mb="10px">
             <Grid container
+                  direction="row"
                   justify="center"
-                  alignItems="flex-start"
+                  alignItems="center"
                   spacing={4}>
               {roommates.map((mate) => (
-                 <Grid item mb={6}>
-                <Card className={"root"} variant="outlined" >
+                 <Grid item xs={6} sm={"auto"} >
+                   <Card className={"root"} variant="outlined"  borderColor="primary.main">
                   <CardContent >
                     <Typography color="textPrimary" variant="h3" component="h3">
                       Roommate
@@ -119,6 +120,8 @@ class Result extends Component {
                     <br></br>
                   </CardContent>
                 </Card>
+               
+                
                 </Grid>
               ))}
               </Grid>
