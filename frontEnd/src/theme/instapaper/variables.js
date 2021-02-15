@@ -5,6 +5,10 @@ const primary = {
   main: '#3897f0',
 };
 
+const Second = {
+  main: '#0000ff',
+}
+
 const theme = createMuiTheme({
   typography: {
     // Use the system font instead of the default Roboto font.
@@ -23,6 +27,7 @@ const theme = createMuiTheme({
   },
   palette: {
     primary,
+    Second
   },
   shape: {
     borderRadius: 4,

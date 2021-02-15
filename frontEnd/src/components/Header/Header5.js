@@ -33,7 +33,6 @@ const Header = () => (
             
 
             <Divider vertical />
-
             <b>Match Roommates</b>
           </Grid>
         </Grid>

@@ -132,10 +132,9 @@ def create_user():
 
     return jsonify({"message": "New user created!"})
 
-
+#Hacer test
 @app.route("/api/fakeuserHomber", methods=["POST"])
 def create_hombres():
-
     pasAll = "123";
     #Make hashed_pass = 
     with open('testH.json') as json_file:
@@ -185,9 +184,6 @@ def create_hombres():
             count += 1
             db.session.add(new_test)
             db.session.commit()     
-        
-        #print(f'Male name: {faker.first_name_male()}')
-    
     return jsonify({"message": "New users created!"})
 
 @app.route("/api/fakeuserMujeres", methods=["POST"])
@@ -450,7 +446,7 @@ def get_result(current_user):
     if not resident:
         return jsonify({"message": "Dude, no resident found"}), 404
 
-    matchR = Matches.query.filter_by(user_id=resident.public_id).first()
+    matchR = Matches.query.filter_by(user_id=resident.id).first()
     if not matchR:
         return jsonify({"message": " Not result in match :("}), 404
 
@@ -460,7 +456,7 @@ def get_result(current_user):
 
     for match in matchAll:
         match_data = {}
-        resident = Residents.query.filter_by(public_id=match.user_id).first()
+        resident = Residents.query.filter_by(id=match.user_id).first()
         if resident.public_id != current_user.public_id:
             match_data["room_id"] = match.room_id
             match_data["nameR"] = resident.name
@@ -683,150 +679,6 @@ def matchs_ia():
 
     return jsonify({"testsALL": output}, {"error": error}, {"nfound": nfound})
 
-#Hacer los emparejamientos para hombres
-
-@app.route("/api/ia/matchsHombres", methods=["GET"])
-# @token_required
-# def get_all_test(current_user):
-def matchs_ia_hombres():
-
-    # if not current_user.admin:
-    #     return jsonify({'message' : 'Cannot perform that function!'})
-
-    tests = TestR.query.filter_by(gender="Hombre").all()
-    tiempoTI= time.process_time_ns()
-    dataSet = []
-    #Quitar asentos, ñ , etc..
-    trans_tab = dict.fromkeys(map(ord, u"\u0301\u0308"), None)
-    for test in tests:
-        resident = Residents.query.filter_by(public_id=test.public_id).first()
-        test_data = (
-            "-"
-            +str(resident.id)
-            + "-"
-            #+ test.gender
-            + str(test.age)
-            + test.musicGender
-            + test.sport
-            + test.hobbie
-            + test.movieSeries
-            + test.filmGender
-            + test.tabaco
-            + test.alcohol
-            + test.party
-            + " "+str(test.ordenConvivencia)
-            + " "+str(test.ordenPersonal)
-            + test.personalidad
-        )
-        test_data = normalize("NFKC", normalize("NFKD", test_data).translate(trans_tab))
-        dataSet.append(test_data)
-
-    tiempoPI= time.process_time_ns()
-    distans = [
-        distance.edit_distance(dataSet[i], dataSet[j])
-        for i in range(1, len(dataSet))
-        for j in range(0, i)
-    ]
-    tiempoPF= (time.process_time_ns() - tiempoPI)
-    tiempoPF= tiempoPF /60000000000
-    tiempoCI= time.process_time_ns()
-    labels, error, nfound = PC.kmedoids(distans, nclusters=10, npass=10)
-    cluster = dict()
-    output = []
-    for roommate, label in zip(dataSet, labels):
-        cluster.setdefault(label, []).append(roommate)
-    for label, grp in cluster.items():
-        cluster_data = {}
-        cluster_data["Roommate"] = grp
-        cluster_data["Count"] = len(grp)
-        cluster_data["label"] = str(label)
-        output.append(cluster_data)
-    tiempoCF= (time.process_time_ns()-tiempoCI)
-    tiempoTF= (time.process_time_ns()-tiempoTI)
-    tiempoCF= tiempoCF /60000000000
-    tiempoTF= tiempoTF /60000000000
-
-
-    #Asiganar a cuarto 
-    # txt = "-1-18ElectronicaFutbolPlayStationAmbasAccionNoNoSi 8 8extro"
-    # x = txt.split("-")
-    # print(x[1])
-
-    return jsonify({"testsHombres": output},
-        {"error": error}, 
-        {"nfound": nfound},
-        {"TiempoTotal": tiempoTF},
-        {"TiempoProcesado": tiempoPF},
-        {"TiempoCluster": tiempoCF})
-
-#Hacer los emparejamientos para mujeres
-
-@app.route("/api/ia/matchsMujeres", methods=["GET"])
-# @token_required
-# def get_all_test(current_user):
-def matchs_ia_mujeres():
-
-    # if not current_user.admin:
-    #     return jsonify({'message' : 'Cannot perform that function!'})
-
-    tests = TestR.query.filter_by(gender="Mujer").all()
-    tiempoTI= time.process_time_ns()
-    dataSet = []
-    #Quitar asentos, ñ , etc..
-    trans_tab = dict.fromkeys(map(ord, u"\u0301\u0308"), None)
-    for test in tests:
-        resident = Residents.query.filter_by(public_id=test.public_id).first()
-        test_data = (
-            "-"
-            +str(resident.id)
-            + "-"
-            #+ test.gender
-            + str(test.age)
-            + test.musicGender
-            + test.sport
-            + test.hobbie
-            + test.movieSeries
-            + test.filmGender
-            + test.tabaco
-            + test.alcohol
-            + test.party
-            + " "+str(test.ordenConvivencia)
-            + " "+str(test.ordenPersonal)
-            + test.personalidad
-        )
-        test_data = normalize("NFKC", normalize("NFKD", test_data).translate(trans_tab))
-        dataSet.append(test_data)
-    tiempoPI= time.process_time_ns()
-    distans = [
-        distance.edit_distance(dataSet[i], dataSet[j])
-        for i in range(1, len(dataSet))
-        for j in range(0, i)
-    ]
-    tiempoPF= (time.process_time_ns() - tiempoPI)
-    tiempoPF= tiempoPF /60000000000
-    tiempoCI= time.process_time_ns()
-    labels, error, nfound = PC.kmedoids(distans, nclusters=10, npass=10)
-    cluster = dict()
-    output = []
-    for roommate, label in zip(dataSet, labels):
-        cluster.setdefault(label, []).append(roommate)
-    for label, grp in cluster.items():
-        cluster_data = {}
-        cluster_data["Roommate"] = grp
-        cluster_data["Count"] = len(grp)
-        cluster_data["label"] = str(label)
-        output.append(cluster_data)
-
-    tiempoCF= (time.process_time_ns()-tiempoCI)
-    tiempoTF= (time.process_time_ns()-tiempoTI)
-    tiempoCF= tiempoCF /60000000000
-    tiempoTF= tiempoTF /60000000000
-    return jsonify({"testsMujeres": output}, {"error": error}, {"nfound": nfound},{"TiempoTotal": tiempoTF},
-        {"TiempoProcesado": tiempoPF},
-        {"TiempoCluster": tiempoCF})
-
-
-
 # make a room
 @app.route("/api/room", methods=["POST"])
 @token_required
@@ -907,9 +759,9 @@ def get_all_rooms(current_user):
 
 # agregar resident a una habitación o asociar una habitación a un resident
 # post
-@app.route("/api/match/<room_id>/<public_id>", methods=["POST"])
+@app.route("/api/match/<room_id>/<id_resident>", methods=["POST"])
 @token_required
-def add_room_to_resident(current_user, room_id, public_id):
+def add_room_to_resident(current_user, room_id, id_resident):
 
     if not current_user.admin:
         return jsonify({"message": "Cannot perform that function!"})
@@ -919,11 +771,11 @@ def add_room_to_resident(current_user, room_id, public_id):
     if not room:
         return jsonify({"message": "No room found!"}), 404
 
-    resident = Residents.query.filter_by(public_id=public_id).first()
+    resident = Residents.query.filter_by(id=id_resident).first()
     if not resident:
         return jsonify({"message": "Dude, no resident found ! :("}), 404
 
-    new_match = Matches(user_id=resident.public_id, room_id=room.id)
+    new_match = Matches(user_id=resident.id, room_id=room.id)
     db.session.add(new_match)
     db.session.commit()
 
@@ -951,7 +803,7 @@ def get_matchs_room(current_user, room_id):
 
     for match in matchAll:
         match_data = {}
-        resident = Residents.query.filter_by(public_id=match.user_id).first()
+        resident = Residents.query.filter_by(id=match.user_id).first()
         match_data["room_id"] = match.room_id
         match_data["nameR"] = resident.name
         match_data["lastNR"] = resident.lastName
@@ -977,7 +829,7 @@ def get_all_matches(current_user):
 
     for match in matchAll:
         match_data = {}
-        resident = Residents.query.filter_by(public_id=match.user_id).first()
+        resident = Residents.query.filter_by(id=match.user_id).first()
         match_data["room_id"] = match.room_id
         match_data["nameR"] = resident.name
         match_data["lastNR"] = resident.lastName
@@ -986,18 +838,14 @@ def get_all_matches(current_user):
     return jsonify({"matches": output})
 
 
+@app.route("/api/ia/matchsHFinal", methods=["GET"])
+@token_required
+def matchsTestH(current_user):
 
-
-@app.route("/api/ia/matchsHombresT", methods=["GET"])
-# @token_required
-# def get_all_test(current_user):
-def matchs_ia_hombresTest():
-
-    # if not current_user.admin:
-    #     return jsonify({'message' : 'Cannot perform that function!'})
-
-    tests = TestR.query.filter_by(gender="Hombre").all()
+    if not current_user.admin:
+        return jsonify({'message' : 'Cannot perform that function!'})
     tiempoTI= time.process_time_ns()
+    tests = TestR.query.filter_by(gender="Hombre").all()
     dataSet = []
     #Quitar asentos, ñ , etc..
     trans_tab = dict.fromkeys(map(ord, u"\u0301\u0308"), None)
@@ -1008,22 +856,366 @@ def matchs_ia_hombresTest():
             +str(resident.id)
             + "-"
             #+ test.gender
-            + str(test.age)
-            + test.musicGender
-            + test.sport
-            + test.hobbie
-            + test.movieSeries
-            + test.filmGender
-            + test.tabaco
-            + test.alcohol
-            + test.party
-            + " "+str(test.ordenConvivencia)
-            + " "+str(test.ordenPersonal)
-            + test.personalidad
+            +" "+ str(test.age)
+            +" "+test.musicGender
+            +" "+test.sport
+            +" "+test.hobbie
+            +" "+test.movieSeries
+            +" "+test.filmGender
+            +" "+test.tabaco
+            +" "+test.alcohol
+            +" "+test.party
+            +" "+str(test.ordenConvivencia)
+            +" "+str(test.ordenPersonal)
+            +test.personalidad
         )
         test_data = normalize("NFKC", normalize("NFKD", test_data).translate(trans_tab))
         dataSet.append(test_data)
 
+    tiempoPI= time.process_time_ns()
+    tiempoII= time.process_time_ns()
+    distans = [
+        distance.edit_distance(dataSet[i], dataSet[j])
+        for i in range(1, len(dataSet))
+        for j in range(0, i)
+    ]
+    tiempoPF= (time.process_time_ns() - tiempoPI)
+    tiempoPF= tiempoPF /60000000000
+    tiempoCI= time.process_time_ns()
+    labels, error, nfound = PC.kmedoids(distans, nclusters=10, npass=10)
+    cluster = dict()
+    datosCluster = []
+    outputId = []
+    for roommate, label in zip(dataSet, labels):
+        cluster.setdefault(label, []).append(roommate)
+    for label, grp in cluster.items():
+        cluster_dataID = {}
+        cluster_dataID["resultados"] = grp
+        outputId.append(cluster_dataID)
+    tiempoCF= (time.process_time_ns()-tiempoCI)
+    tiempoIF= (time.process_time_ns()-tiempoII)
+    tiempoCF= tiempoCF /60000000000
+    tiempoIF= tiempoIF /60000000000
+
+    returnObj = []
+    sizeRooms = 4
+    #Makes rooms
+    for cluster in outputId:
+        room = []
+        for row in cluster.values():
+            num = len(row)
+            #number of tests in cluster
+            residual = num % sizeRooms
+            offset = 1
+            for test in row:
+                #extract and format data
+                x = test.split("-")
+                index = row.index(test)
+                realI = index+1
+                room.append(x[1])
+
+                if realI%sizeRooms == 0:
+                    #add room and create room
+                    returnObj.append(room[:])
+                    #empty room
+                    room.clear()
+                if (residual > 0 and realI>sizeRooms*(num//sizeRooms)):
+                    #si residuo es 1, ultima, 2, penultima, 3 antepenutima.
+                    #si % de num es =! 0, (1,2,3) meter en ult, pen, o ante
+                    #number of rooms 
+                    counter=(len(returnObj))-offset
+                    #print(counter, x[1], "ok"
+                    returnObj[counter].append(x[1])
+                    offset+=1
+    #Write in DB
+    for rooms in returnObj:
+        new_room = Rooms(state="Completo")
+        db.session.add(new_room)
+        db.session.commit()
+        for x in range(0,len(rooms)):
+            new_match = Matches(user_id=rooms[x], room_id=new_room.id)
+            db.session.add(new_match)
+            db.session.commit()
+    
+    tiempoTF= (time.process_time_ns()-tiempoTI)
+    tiempoTF= tiempoTF /60000000000
+
+    datos_data = {}
+    datos_data["tiempoT"] =tiempoTF
+    datos_data["TimepoIA"] = tiempoIF
+    datos_data["tiempoP"] =tiempoPF
+    datos_data["tiempoC"] =tiempoCF
+    datos_data["error"] =error
+    datos_data["nS"] =nfound
+    datosCluster.append(datos_data)
+
+    return jsonify({"datosIA":datos_data})
+    
+
+@app.route("/api/ia/matchsMFinal", methods=["GET"])
+@token_required
+def matchsTestM(current_user):
+
+    if not current_user.admin:
+        return jsonify({'message' : 'Cannot perform that function!'})
+    tiempoTI= time.process_time_ns()
+    tests = TestR.query.filter_by(gender="Mujer").all()
+    dataSet = []
+    #Quitar asentos, ñ , etc..
+    trans_tab = dict.fromkeys(map(ord, u"\u0301\u0308"), None)
+    for test in tests:
+        resident = Residents.query.filter_by(public_id=test.public_id).first()
+        test_data = (
+            "-"
+            +str(resident.id)
+            + "-"
+            #+ test.gender
+            +" "+ str(test.age)
+            +" "+test.musicGender
+            +" "+test.sport
+            +" "+test.hobbie
+            +" "+test.movieSeries
+            +" "+test.filmGender
+            +" "+test.tabaco
+            +" "+test.alcohol
+            +" "+test.party
+            +" "+str(test.ordenConvivencia)
+            +" "+str(test.ordenPersonal)
+            +test.personalidad
+        )
+        test_data = normalize("NFKC", normalize("NFKD", test_data).translate(trans_tab))
+        dataSet.append(test_data)
+
+    tiempoPI= time.process_time_ns()
+    tiempoII= time.process_time_ns()
+    distans = [
+        distance.edit_distance(dataSet[i], dataSet[j])
+        for i in range(1, len(dataSet))
+        for j in range(0, i)
+    ]
+    tiempoPF= (time.process_time_ns() - tiempoPI)
+    tiempoPF= tiempoPF /60000000000
+    tiempoCI= time.process_time_ns()
+    labels, error, nfound = PC.kmedoids(distans, nclusters=10, npass=10)
+    cluster = dict()
+    datosCluster = []
+    outputId = []
+    for roommate, label in zip(dataSet, labels):
+        cluster.setdefault(label, []).append(roommate)
+    for label, grp in cluster.items():
+        cluster_dataID = {}
+        cluster_dataID["resultados"] = grp
+        outputId.append(cluster_dataID)
+    tiempoCF= (time.process_time_ns()-tiempoCI)
+    tiempoIF= (time.process_time_ns()-tiempoII)
+    tiempoCF= tiempoCF /60000000000
+    tiempoIF= tiempoIF /60000000000
+
+    returnObj = []
+    sizeRooms = 4
+    #Makes rooms
+    for cluster in outputId:
+        room = []
+        for row in cluster.values():
+            num = len(row)
+            #number of tests in cluster
+            residual = num % sizeRooms
+            offset = 1
+            for test in row:
+                #extract and format data
+                x = test.split("-")
+                index = row.index(test)
+                realI = index+1
+                room.append(x[1])
+
+                if realI%sizeRooms == 0:
+                    #add room and create room
+                    returnObj.append(room[:])
+                    #empty room
+                    room.clear()
+                if (residual > 0 and realI>sizeRooms*(num//sizeRooms)):
+                    #si residuo es 1, ultima, 2, penultima, 3 antepenutima.
+                    #si % de num es =! 0, (1,2,3) meter en ult, pen, o ante
+                    #number of rooms 
+                    counter=(len(returnObj))-offset
+                    #print(counter, x[1], "ok"
+                    returnObj[counter].append(x[1])
+                    offset+=1
+    #Write in DB
+    for rooms in returnObj:
+        new_room = Rooms(state="Completo")
+        db.session.add(new_room)
+        db.session.commit()
+        for x in range(0,len(rooms)):
+            new_match = Matches(user_id=rooms[x], room_id=new_room.id)
+            db.session.add(new_match)
+            db.session.commit()
+    
+    tiempoTF= (time.process_time_ns()-tiempoTI)
+    tiempoTF= tiempoTF /60000000000
+
+    datos_data = {}
+    datos_data["tiempoT"] =tiempoTF
+    datos_data["TimepoIA"] = tiempoIF
+    datos_data["tiempoP"] =tiempoPF
+    datos_data["tiempoC"] =tiempoCF
+    datos_data["error"] =error
+    datos_data["nS"] =nfound
+    datosCluster.append(datos_data)
+
+    return jsonify({"datosIA":datos_data})
+
+
+#Endpoint test
+@app.route("/api/ia/matchsHFinalTest", methods=["GET"])
+@token_required
+def matchsTestHTes(current_user):
+
+    if not current_user.admin:
+        return jsonify({'message' : 'Cannot perform that function!'})
+    tiempoTI= time.process_time_ns()
+    tests = TestR.query.filter_by(gender="Hombre").all()
+    dataSet = []
+    #Quitar asentos, ñ , etc..
+    trans_tab = dict.fromkeys(map(ord, u"\u0301\u0308"), None)
+    for test in tests:
+        resident = Residents.query.filter_by(public_id=test.public_id).first()
+        test_data = (
+            "-"
+            +str(resident.id)
+            + "-"
+            #+ test.gender
+            +" "+ str(test.age)
+            +" "+test.musicGender
+            +" "+test.sport
+            +" "+test.hobbie
+            +" "+test.movieSeries
+            +" "+test.filmGender
+            +" "+test.tabaco
+            +" "+test.alcohol
+            +" "+test.party
+            +" "+str(test.ordenConvivencia)
+            +" "+str(test.ordenPersonal)
+            +test.personalidad
+        )
+        test_data = normalize("NFKC", normalize("NFKD", test_data).translate(trans_tab))
+        dataSet.append(test_data)
+
+    tiempoPI= time.process_time_ns()
+    tiempoII= time.process_time_ns()
+    distans = [
+        distance.edit_distance(dataSet[i], dataSet[j])
+        for i in range(1, len(dataSet))
+        for j in range(0, i)
+    ]
+    tiempoPF= (time.process_time_ns() - tiempoPI)
+    tiempoPF= tiempoPF /60000000000
+    tiempoCI= time.process_time_ns()
+    labels, error, nfound = PC.kmedoids(distans, nclusters=10, npass=10)
+    cluster = dict()
+    datosCluster = []
+    outputId = []
+    for roommate, label in zip(dataSet, labels):
+        cluster.setdefault(label, []).append(roommate)
+    for label, grp in cluster.items():
+        cluster_dataID = {}
+        cluster_dataID["resultados"] = grp
+        outputId.append(cluster_dataID)
+    tiempoCF= (time.process_time_ns()-tiempoCI)
+    tiempoIF= (time.process_time_ns()-tiempoII)
+    tiempoCF= tiempoCF /60000000000
+    tiempoIF= tiempoIF /60000000000
+
+    returnObj = []
+    sizeRooms = 4
+    #Makes rooms
+    for cluster in outputId:
+        room = []
+        for row in cluster.values():
+            num = len(row)
+            #number of tests in cluster
+            residual = num % sizeRooms
+            offset = 1
+            for test in row:
+                #extract and format data
+                x = test.split("-")
+                index = row.index(test)
+                realI = index+1
+                room.append(x[1])
+
+                if realI%sizeRooms == 0:
+                    #add room and create room
+                    returnObj.append(room[:])
+                    #empty room
+                    room.clear()
+                if (residual > 0 and realI>sizeRooms*(num//sizeRooms)):
+                    #si residuo es 1, ultima, 2, penultima, 3 antepenutima.
+                    #si % de num es =! 0, (1,2,3) meter en ult, pen, o ante
+                    #number of rooms 
+                    counter=(len(returnObj))-offset
+                    #print(counter, x[1], "ok"
+                    returnObj[counter].append(x[1])
+                    offset+=1
+    #Write in DB
+    # for rooms in returnObj:
+    #     new_room = Rooms(state="Completo")
+    #     db.session.add(new_room)
+    #     db.session.commit()
+    #     for x in range(0,len(rooms)):
+    #         new_match = Matches(user_id=rooms[x], room_id=new_room.id)
+    #         db.session.add(new_match)
+    #         db.session.commit()
+    
+    tiempoTF= (time.process_time_ns()-tiempoTI)
+    tiempoTF= tiempoTF /60000000000
+
+    datos_data = {}
+    datos_data["tiempoT"] =tiempoTF
+    datos_data["TimepoIA"] = tiempoIF
+    datos_data["tiempoP"] =tiempoPF
+    datos_data["tiempoC"] =tiempoCF
+    datos_data["error"] =error
+    datos_data["nS"] =nfound
+    datosCluster.append(datos_data)
+
+    return jsonify({"datosIA":datos_data})
+    
+
+@app.route("/api/ia/matchsMFinalTest", methods=["GET"])
+@token_required
+def matchsTestMTes(current_user):
+
+    if not current_user.admin:
+        return jsonify({'message' : 'Cannot perform that function!'})
+    tiempoTI= time.process_time_ns()
+    tests = TestR.query.filter_by(gender="Mujer").all()
+    dataSet = []
+    #Quitar asentos, ñ , etc..
+    trans_tab = dict.fromkeys(map(ord, u"\u0301\u0308"), None)
+    for test in tests:
+        resident = Residents.query.filter_by(public_id=test.public_id).first()
+        test_data = (
+            "-"
+            +str(resident.id)
+            + "-"
+            #+ test.gender
+            +" "+ str(test.age)
+            +" "+test.musicGender
+            +" "+test.sport
+            +" "+test.hobbie
+            +" "+test.movieSeries
+            +" "+test.filmGender
+            +" "+test.tabaco
+            +" "+test.alcohol
+            +" "+test.party
+            +" "+str(test.ordenConvivencia)
+            +" "+str(test.ordenPersonal)
+            +test.personalidad
+        )
+        test_data = normalize("NFKC", normalize("NFKD", test_data).translate(trans_tab))
+        dataSet.append(test_data)
+
+    tiempoII= time.process_time_ns()
     tiempoPI= time.process_time_ns()
     distans = [
         distance.edit_distance(dataSet[i], dataSet[j])
@@ -1035,36 +1227,29 @@ def matchs_ia_hombresTest():
     tiempoCI= time.process_time_ns()
     labels, error, nfound = PC.kmedoids(distans, nclusters=10, npass=10)
     cluster = dict()
-    output = []
+    datosCluster = []
     outputId = []
     for roommate, label in zip(dataSet, labels):
         cluster.setdefault(label, []).append(roommate)
     for label, grp in cluster.items():
-        cluster_data = {}
         cluster_dataID = {}
-        cluster_data["Roommate"] = grp
         cluster_dataID["resultados"] = grp
-        cluster_data["Count"] = len(grp)
-        cluster_data["label"] = str(label)
-        output.append(cluster_data)
         outputId.append(cluster_dataID)
     tiempoCF= (time.process_time_ns()-tiempoCI)
-    tiempoTF= (time.process_time_ns()-tiempoTI)
+    tiempoIF= (time.process_time_ns()-tiempoII)
     tiempoCF= tiempoCF /60000000000
-    tiempoTF= tiempoTF /60000000000
+    tiempoIF= tiempoIF /60000000000
 
     returnObj = []
     sizeRooms = 4
-
+    #Makes rooms
     for cluster in outputId:
         room = []
-        yo= 0
         for row in cluster.values():
             num = len(row)
             #number of tests in cluster
             residual = num % sizeRooms
             offset = 1
-            
             for test in row:
                 #extract and format data
                 x = test.split("-")
@@ -1073,9 +1258,7 @@ def matchs_ia_hombresTest():
                 room.append(x[1])
 
                 if realI%sizeRooms == 0:
-                    #add room
-                    yo+=1
-                    print("he",yo)
+                    #add room and create room
                     returnObj.append(room[:])
                     #empty room
                     room.clear()
@@ -1084,30 +1267,29 @@ def matchs_ia_hombresTest():
                     #si % de num es =! 0, (1,2,3) meter en ult, pen, o ante
                     #number of rooms 
                     counter=(len(returnObj))-offset
-                    print(counter, x[1], "ok")
+                    #print(counter, x[1], "ok"
                     returnObj[counter].append(x[1])
                     offset+=1
-                    
+    #Write in DB
+    # for rooms in returnObj:
+    #     new_room = Rooms(state="Completo")
+    #     db.session.add(new_room)
+    #     db.session.commit()
+    #     for x in range(0,len(rooms)):
+    #         new_match = Matches(user_id=rooms[x], room_id=new_room.id)
+    #         db.session.add(new_match)
+    #         db.session.commit()
+    
+    tiempoTF= (time.process_time_ns()-tiempoTI)
+    tiempoTF= tiempoTF /60000000000
 
-    # for cluster in output:
+    datos_data = {}
+    datos_data["tiempoT"] =tiempoTF
+    datos_data["TimepoIA"] = tiempoIF
+    datos_data["tiempoP"] =tiempoPF
+    datos_data["tiempoC"] =tiempoCF
+    datos_data["error"] =error
+    datos_data["nS"] =nfound
+    datosCluster.append(datos_data)
 
-    # new_room = Rooms(state="Ocupado")
-    # db.session.add(new_room)
-    # db.session.commit()
-
-    # new_match = Matches(user_id=resident.public_id, room_id=room.id)
-    # db.session.add(new_match)
-    # db.session.commit()
-
-
-
-    #Asiganar a cuarto 
-    #  txt = "-1-18ElectronicaFutbolPlayStationAmbasAccionNoNoSi 8 8extro"
-    #  x = txt.split("-")
-    #  print(x[1])
-
-    return jsonify({"matchs":returnObj})
-
-
-# if __name__ == '__main__':
-#     app.run(debug=True)
+    return jsonify({"datosIA":datos_data})

@@ -9,6 +9,7 @@ import TestUR from "./pages/Test";
 import ValidarResult from "./pages/ValidarResult"
 import ReactDOM from "react-dom";
 import { BrowserRouter, Route } from "react-router-dom";
+import RealizarMatchs from "./pages/RealizarMatchs";
 
 ReactDOM.render(
   <BrowserRouter>
@@ -17,10 +18,11 @@ ReactDOM.render(
       <Route path="/Home" component={HomeUR}/>
       <Route path="/Login" component ={Login}/>
       <Route path="/Test" component={TestUR}/>
-      <Route path ="/Result" component={Result}/>
+      <Route path="/Result" component={Result}/>
       <Route path="/Profile" component={Profile}/>
-      <Route path="/HomeUA" component={HomeUA} />
-      <Route path = "/ValidarR" component={ValidarResult}/>
+      <Route path="/HomeUA" component={HomeUA}/>
+      <Route path="/VerResultados" component={ValidarResult}/>
+      <Route path="/RealizarMatches" component={RealizarMatchs}/>
     </div>
   </BrowserRouter>,
   document.getElementById("root")

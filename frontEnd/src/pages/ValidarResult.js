@@ -4,7 +4,7 @@ import ButtonGroup from "@material-ui/core/ButtonGroup";
 import Grid from "@material-ui/core/Grid";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import atoms from "../components/atoms";
-import Header from "../components/Header/Header3";
+import Header from "../components/Header/Header5";
 import theme from "../theme/instapaper/theme";
 import withTheme from "./withTheme";
 import Box from "@material-ui/core/Box";
@@ -66,7 +66,7 @@ class ValidarResult extends Component {
           <Grid container spacing={3}>
             <Grid item xs={12}>
             <Typography variant="h4" gutterBottom>
-                  Piso Hombres
+                  Habitaciones
                 </Typography>
             </Grid>
             {rooms.map((mate) => (

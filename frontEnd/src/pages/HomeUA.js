@@ -39,14 +39,6 @@ const useStyles = makeStyles({
 });
 
 class HomeUA extends Component {
-  /*constructor(props) {
-    super(props);
-      // const [tabIndex, setTabIndex] = React.useState(0);
-      // const classes = useStyles();
-      // const upSm = useMediaQuery(theme.breakpoints.up("sm"), {
-      //   defaultMatches: true
-      // });
-  }*/
 
   render() {
     return (
@@ -62,16 +54,18 @@ class HomeUA extends Component {
           <Box mb="44px">
             <Grid container spacing={3} display="center">
               <Grid item md={12}>
-              <Link to="/ValidarR" id="link">
-              <Button variant="contained" color="primary">
-                  Validar Resultados
-                </Button>
-              </Link>
-              </Grid>
-              <Grid item md={12}>
+              <Link to="/RealizarMatches" id="link">
               <Button variant="contained" color="primary">
                   Realizar Matchs
               </Button>
+              </Link>
+              </Grid>
+              <Grid item md={12}>
+              <Link to="/VerResultados" id="link">
+              <Button variant="contained" color="primary">
+                  Ver Resultados
+                </Button>
+              </Link>
               </Grid>
             </Grid>
           </Box>

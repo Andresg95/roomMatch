@@ -520,12 +520,10 @@ DataSetTFG = [
 
 #td*(0-1) saber el tiempo que toma ejecuatar cada parte del codigo
 td0= time.process_time_ns()
-
 #Get distance 
 dist2 = [distance.edit_distance(DataSetTFG[i], DataSetTFG[j]) 
         for i in range(1, len(DataSetTFG))
         for j in range(0, i)]
-
 #Tiempo Distancias
 td1 = time.process_time_ns() - td0
 
@@ -539,6 +537,7 @@ for roommate, label in zip(DataSetTFG, labels1):
     cluster1.setdefault(label, []).append(roommate)
 for label, grp in cluster1.items():
     print(grp)
+
 tc11 = time.process_time_ns() - tc10
 
 #TiempoClusterK2
@@ -568,10 +567,10 @@ tc40 = time.process_time_ns()
 #Cluster kmedoids K4 npass3
 labels4, error4, nfound4 = PC.kmedoids(dist2, nclusters=4,npass=10)
 cluster4 = dict()
-w = csv.writer(open("Cluster410np.csv", "w"))
+# w = csv.writer(open("Cluster410np.csv", "w"))
 for roommate, label in zip(DataSetTFG, labels4):
     cluster4.setdefault(label, []).append(roommate)
-    w.writerow([roommate, label])
+    # w.writerow([roommate, label])
 for label, grp in cluster4.items():
     print(grp)
 tc41 = time.process_time_ns() -tc40
@@ -580,10 +579,10 @@ tc50 = time.process_time_ns()
 #Cluster kmedoids K5 npass3
 labels5, error5, nfound5 = PC.kmedoids(dist2, nclusters=5,npass=10)
 cluster5 = dict()
-w1 = csv.writer(open("Cluster510np.csv", "w"))
+# w1 = csv.writer(open("Cluster510np.csv", "w"))
 for roommate, label in zip(DataSetTFG, labels5):
     cluster5.setdefault(label, []).append(roommate)
-    w1.writerow([roommate, label])
+    # w1.writerow([roommate, label])
 for label, grp in cluster5.items():
     print(grp)
 
@@ -610,13 +609,13 @@ print("Cluster 5 Keys",cluster5.keys())
 
 
 #Guardamos cluster4y5, ya que son los que dan menor error. K4 seria la mejor opción
-with open('cluster4TFGPF10np.pickle', 'wb') as f:
-    pickle.dump(cluster4, f)
-df= pd.DataFrame.from_dict(cluster4,orient='index').to_csv('cluster4TFGPF10np.csv')
+# with open('cluster4TFGPF10np.pickle', 'wb') as f:
+#     pickle.dump(cluster4, f)
+# df= pd.DataFrame.from_dict(cluster4,orient='index').to_csv('cluster4TFGPF10np.csv')
 
-with open('cluster5TFGPF.pickle', 'wb') as f:
-    pickle.dump(cluster5, f)
-df= pd.DataFrame.from_dict(cluster5,orient='index').to_csv('cluster5TFGPF10np.csv')
+# with open('cluster5TFGPF.pickle', 'wb') as f:
+#     pickle.dump(cluster5, f)
+# df= pd.DataFrame.from_dict(cluster5,orient='index').to_csv('cluster5TFGPF10np.csv')
     
 
 
